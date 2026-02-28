@@ -67,10 +67,10 @@
 - [x] 🔍 리뷰 완료
 
 #### Step-0.1.2: Topic/Partition
-- [ ] 학습 + `docs/concepts/topic-partition.md` 작성
+- [x] 학습 + `docs/concepts/topic-partition.md` 작성
   - Topic의 논리적 구조, Partition의 물리적 분산
   - 파티션 내 순서 보장 vs 파티션 간 순서 미보장
-- [ ] 🔍 리뷰 완료
+- [x] 🔍 리뷰 완료
 
 #### Step-0.1.3: Consumer Group
 - [ ] 학습 + `docs/concepts/consumer-group.md` 작성
@@ -123,7 +123,7 @@
 
 ### US-0.1 ✅
 - [x] Step-0.1.1: `docs/concepts/producer-consumer.md` 작성 + 리뷰 완료
-- [ ] Step-0.1.2: `docs/concepts/topic-partition.md` 작성 + 리뷰 완료
+- [x] Step-0.1.2: `docs/concepts/topic-partition.md` 작성 + 리뷰 완료
 - [ ] Step-0.1.3: `docs/concepts/consumer-group.md` 작성 + 리뷰 완료
 
 ### US-0.2 ✅
