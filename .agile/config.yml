@@ -1,0 +1,4 @@
+# Agile 설정
+project_name: "EDA PoC"
+sprint_duration_days: 3  # 기본 Sprint 기간 (Phase별 조정)
+start_date: "2026-02-28"
