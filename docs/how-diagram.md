@@ -2,8 +2,7 @@
 
 ## Quick Guide (30초 문서 이해 가이드)
 - **핵심 결론:** 이커머스 주문 팬아웃 문제를 동기/비동기 서브 프로젝트로 나란히 구현하고, 정량 비교로 EDA 핵심 가치를 증명한다.
-- **확정된 결정:** 5개 Phase (개념학습→기반→핵심검증→심화학습→포트폴리오), Spring Cloud 제외, At Least Once + 멱등성
-- **확정된 결정:** 비동기 방식은 Fan-out 구조 — 주문 완료 이벤트 1개를 notification/shipping 서비스가 독립적으로 동시 소비
+- **확정된 결정:** 5개 Phase (개념학습→기반→핵심검증→심화학습→포트폴리오), Spring Cloud 제외, At Least Once + 멱등성. 비동기는 Fan-out 구조 — 주문 완료 이벤트 1개를 알림/배송 서비스가 독립적으로 동시 소비
 - **바로 실행할 내용:** Phase 2에서 Kafka 인프라 + 서브 프로젝트 스캐폴딩 + 기본 이벤트 흐름
 - **판단 근거:** 사례 조사 5건(배민/쿠팡/LINE/올리브영/사람인) + 동시성 PoC 부하 테스트 교훈
 - **미확정/리스크:** 후속 서비스 지연 시간 구체값(500ms? 1s?), k6 동시 요청 수 최적값
@@ -12,7 +11,7 @@
 
 ## 2W 요약 (from 2w-brainstorm.md)
 
-- **What:** 이커머스 주문 프로세스에서 후속 처리(알림, 배송)가 동기 직렬로 묶여 있어 트래픽 증가 시 응답 지연 및 장애 전파 발생 → EDA(Kafka) Fan-out으로 비동기 병렬 분리
+- **What:** 이커머스 주문 프로세스에서 후속 처리(알림, 배송)가 동기 블로킹으로 묶여 있어 트래픽 증가 시 응답 지연 및 장애 전파 발생 → EDA(Kafka) Fan-out으로 즉시 응답 + 비동기 병렬 분리
 - **Why:** 포트폴리오 (채용 시장 능력 검증). JD 키워드 "MSA 경험 우대", "Kafka 사용 경험" 직접 충족
 - **제약 조건:** 2주, 혼자, PoC 수준, 별도 프로젝트 (동시성 PoC와 해결하는 문제가 다름)
 - **가상 시나리오:** 이커머스 주문 완료 후 알림/배송 팬아웃 문제 (사례 5건 중 4건과 동일 패턴)
@@ -28,23 +27,25 @@
 
 ```mermaid
 flowchart TB
-    subgraph async["비동기 (After) — Fan-out"]
-        order_async["order-service-async\n(Spring Boot :8082)\n주문 API → 재고 차감 → Kafka 발행"]
-        notification_async["notification-service-async\n(Spring Boot :8083)\nConsumer Group A — 알림 발송"]
-        shipping_async["shipping-service-async\n(Spring Boot :8084)\nConsumer Group B — 배송 접수"]
-        order_async -- "OrderCompleted\n이벤트 발행" --> kafka
-        kafka -- "Fan-out\n(Group A)" --> notification_async
-        kafka -- "Fan-out\n(Group B)" --> shipping_async
+    subgraph sync["동기 (Before) — 사용자 블로킹"]
+        order_sync["order-service-sync\n(Spring Boot :8080)\n주문 API + 재고 차감"]
+        notification_sync["notification-service-sync\n(Spring Boot :8081)\n알림 발송 (고정 1s)"]
+        shipping_sync["shipping-service-sync\n(Spring Boot :8082)\n배송 접수 (고정 1s)"]
+        order_sync -- "REST 호출" --> notification_sync
+        order_sync -- "REST 호출" --> shipping_sync
     end
 
-    subgraph sync["동기 (Before) — 직렬"]
-        order_sync["order-service-sync\n(Spring Boot :8080)\n주문 API → REST 직접 호출"]
-        inventory_sync["inventory-service-sync\n(Spring Boot :8081)\n재고차감 + 알림 + 배송 동기 직렬"]
-        order_sync -- "REST 직접 호출\n(동기/직렬)" --> inventory_sync
+    subgraph async["비동기 (After) — 즉시 응답 + Fan-out"]
+        order_async["order-service-async\n(Spring Boot :8083)\n주문 API + 재고 차감 + Kafka 발행"]
+        kafka[("Kafka\nMessage Broker")]
+        notification_async["notification-service-async\n(Spring Boot :8084)\nConsumer Group A — 알림 발송 (고정 1s)"]
+        shipping_async["shipping-service-async\n(Spring Boot :8085)\nConsumer Group B — 배송 접수 (고정 1s)"]
+        order_async -- "OrderCompleted\n이벤트 발행" --> kafka
+        kafka -- "Fan-out (Group A)" --> notification_async
+        kafka -- "Fan-out (Group B)" --> shipping_async
     end
 
     subgraph infra["공통 인프라 (Docker Compose)"]
-        kafka[("Kafka\nMessage Broker")]
         k6["k6\nLoad Test"]
     end
 
@@ -57,21 +58,23 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     participant User as 사용자
-    participant OS as order-service-sync
-    participant IS as inventory-service-sync
-    participant Noti as 알림 (외부 API)
-    participant Ship as 배송 (외부 API)
+    participant OS as 주문
+    participant NS as 알림
+    participant SS as 배송
 
     User->>OS: POST /orders
-    OS->>IS: REST: 재고 차감
-    IS-->>OS: 차감 완료
-    OS->>Noti: REST: 알림 발송 (고정 1s)
-    Noti-->>OS: 완료
-    OS->>Ship: REST: 배송 접수 (고정 1s)
-    Ship-->>OS: 완료
-    OS-->>User: 주문 완료 응답 (총 2s+)
+    OS->>OS: 재고 차감 (DB)
 
-    Note over OS,Ship: 문제: 후속 처리 지연이 직렬로 누적 (알림 1s + 배송 1s = 2s+)<br/>알림/배송 중 하나라도 장애 시 주문 전체 실패
+    par 병렬 REST 호출 (CompletableFuture)
+        OS->>NS: REST: 알림 발송 (고정 1s)
+    and
+        OS->>SS: REST: 배송 접수 (고정 1s)
+    end
+    NS-->>OS: 완료
+    SS-->>OS: 완료
+    OS-->>User: 주문 완료 응답 (약 1s+)
+
+    Note over OS,SS: 문제: 병렬 REST 호출이더라도 사용자는 모든 후속 처리 완료까지 대기 (블로킹)<br/>알림/배송 중 하나라도 장애 시 주문 전체 실패
 ```
 
 ### 3. 비동기 방식 흐름 (After) — Fan-out
@@ -79,12 +82,10 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant User as 사용자
-    participant OA as order-service-async
+    participant OA as 주문
     participant K as Kafka
-    participant NS as notification-service-async
-    participant SS as shipping-service-async
-    participant Noti as 알림 (외부 API)
-    participant Ship as 배송 (외부 API)
+    participant NA as 알림 Consumer
+    participant SA as 배송 Consumer
     participant DLQ as Dead Letter Queue
 
     User->>OA: POST /orders
@@ -93,15 +94,15 @@ sequenceDiagram
     OA-->>User: 주문 완료 응답 (즉시)
 
     par Fan-out: 동시 처리
-        K->>NS: 이벤트 전달 (Consumer Group A)
-        NS->>Noti: 알림 발송 (고정 1s)
+        K->>NA: 이벤트 전달 (Consumer Group A)
+        NA->>NA: 알림 발송 (고정 1s)
     and
-        K->>SS: 이벤트 전달 (Consumer Group B)
-        SS->>Ship: 배송 접수 (고정 1s)
+        K->>SA: 이벤트 전달 (Consumer Group B)
+        SA->>SA: 배송 접수 (고정 1s)
     end
 
     alt 후속 처리 실패 시
-        NS->>DLQ: 실패 메시지 격리
+        NA->>DLQ: 실패 메시지 격리
         Note over DLQ: 복구 후 재처리
     end
 
@@ -113,62 +114,60 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant User as 사용자
-    participant OA as order-service-async
+    participant OA as 주문
     participant K as Kafka
-    participant NS as notification-service-async (DOWN)
-    participant SS as shipping-service-async
+    participant NA as 알림 Consumer (DOWN)
+    participant SA as 배송 Consumer
 
-    Note over NS: notification Consumer 중단 (장애 시뮬레이션)
+    Note over NA: 알림 Consumer 중단 (장애 시뮬레이션)
 
     User->>OA: POST /orders
     OA->>OA: 재고 차감
     OA->>K: OrderCompleted 이벤트 발행
     OA-->>User: 주문 완료 응답 (정상!)
 
-    K->>SS: 이벤트 전달 (Group B — 정상)
+    K->>SA: 이벤트 전달 (Group B — 정상)
     Note over K: Group A 메시지 보관 (Consumer Lag 증가)
 
-    Note over NS: Consumer 복구
+    Note over NA: 알림 Consumer 복구
 
-    K->>NS: 밀린 이벤트 재전달
-    NS->>NS: 멱등성 체크 후 처리
+    K->>NA: 밀린 이벤트 재전달
+    NA->>NA: 멱등성 체크 후 처리
 
-    Note over OA,NS: 검증 1: Producer 100% 정상 동작<br/>검증 2: shipping은 notification 장애와 무관하게 처리 계속<br/>검증 3: 복구 후 0% 유실
+    Note over OA,NA: 검증 1: 주문 서비스 100% 정상 동작<br/>검증 2: 배송은 알림 장애와 무관하게 처리 계속<br/>검증 3: 복구 후 0% 유실
 ```
 
 ### 4-2. 장애 격리 시나리오: 후속 처리 실패 → DLQ
 
 ```mermaid
 sequenceDiagram
-    participant OA as order-service-async
     participant K as Kafka
-    participant NS as notification-service-async
-    participant Noti as 알림 (외부 API)
+    participant NA as 알림 Consumer
     participant DLQ as Dead Letter Queue
 
-    K->>NS: OrderCompleted 이벤트 전달
-    NS->>Noti: 알림 발송 (고정 1s)
-    Noti-->>NS: 500 Error (알림 실패)
+    K->>NA: OrderCompleted 이벤트 전달
+    NA->>NA: 알림 발송 (고정 1s)
+    NA-->>NA: 500 Error (알림 실패)
 
-    NS->>NS: 재시도 (1~3회)
-    Noti-->>NS: 500 Error (재시도 실패)
+    NA->>NA: 재시도 (1~3회)
+    NA-->>NA: 500 Error (재시도 실패)
 
-    NS->>DLQ: 실패 메시지 격리
+    NA->>DLQ: 실패 메시지 격리
 
     Note over DLQ: 실패 원인 확인 후 재처리
-    DLQ->>NS: 재처리 트리거
-    NS->>Noti: 알림 재발송
-    Noti-->>NS: 200 OK (성공)
+    DLQ->>NA: 재처리 트리거
+    NA->>NA: 알림 재발송
+    NA-->>NA: 200 OK (성공)
 
-    Note over NS,DLQ: 검증: 실패 메시지 유실 없음 + DLQ에서 재처리 성공
+    Note over NA,DLQ: 검증: 실패 메시지 유실 없음 + DLQ에서 재처리 성공
 ```
 
 ### 다이어그램 설명
 
 | 다이어그램 | 보여주는 것 | PoC 검증 포인트 |
 |-----------|-----------|----------------|
-| **C4 Container** | 전체 서비스 구조 | 동기(직렬) vs 비동기(Fan-out)를 나란히 비교 |
-| **동기 Sequence** | Before: 직렬 처리의 문제점 | 알림(1s) + 배송(1s) 누적 = 2s+ 응답 지연 |
+| **C4 Container** | 전체 서비스 구조 | 동기(블로킹) vs 비동기(Fan-out)를 나란히 비교 |
+| **동기 Sequence** | Before: 사용자 블로킹의 문제점 | 병렬 REST 호출이더라도 사용자는 후속 처리 완료까지 대기 |
 | **비동기 Sequence** | After: Fan-out 병렬 처리 | 즉시 응답 + 알림/배송 동시 1s + 장애 격리 |
 | **장애 격리 4-1** | Consumer 하나 다운 시 나머지 정상 | shipping은 notification 장애와 무관하게 처리 |
 | **장애 격리 4-2** | 후속 처리 실패 시 DLQ 격리 | 재시도 → 실패 → DLQ 격리 → 재처리 성공 |
@@ -176,37 +175,6 @@ sequenceDiagram
 ---
 
 ## 범위 확정
-
-## ADR: Kafka 네이밍 컨벤션
-
-### 상태
-
-Accepted (2026-02-28)
-
-### Context
-
-- Phase 2에서 Topic/Consumer Group 이름이 코드, 설정, 다이어그램에 반복 등장한다.
-- 이름 규칙이 없으면 운영 중 역할 식별, 장애 분석, 버전 마이그레이션이 어려워진다.
-- PoC라도 이후 확장(새 Consumer 추가, 버전 분리)을 고려한 최소 규칙이 필요하다.
-
-### Decision
-
-1. Topic 이름은 `{domain}.{event}.v{n}` 패턴을 사용한다.
-- 예: `order.order-completed.v1`
-- 원칙: 도메인 포함, 이벤트는 비즈니스 사실(과거형), 버전 명시
-
-2. Consumer Group ID는 `{env}.{domain}.{service}.{purpose}.v{n}` 패턴을 사용한다.
-- 예: `dev.order.notification.event-consumer.v1`
-- 원칙: 환경/도메인/소비 주체/목적/버전 포함
-
-3. 동적 값(타임스탬프, 인스턴스 ID)을 Topic/Group ID에 넣지 않는다.
-- 이유: 배포마다 새 Group으로 인식되어 offset 공유가 깨질 수 있음
-
-### Consequences
-
-- 장점: 이름만으로 역할 식별 가능, 로그/모니터링 필터링이 쉬움, 버전 병행 운영이 가능
-- 비용: 네이밍 길이가 다소 길어짐, 규칙 미준수 시 코드 리뷰에서 교정 필요
-- 운영 지침: 같은 처리 목적은 같은 Group ID를 공유하고, 독립 처리 파이프라인은 다른 Group ID를 사용한다.
 
 ### ✅ In Scope
 
@@ -231,7 +199,7 @@ Accepted (2026-02-28)
 | **Kafka Connect / Debezium (CDC)** | 학습 비용 높음, 배민도 전담팀 필요 |
 | **Schema Registry** | 초기 PoC에서는 JSON 직렬화로 충분 |
 | **Kafka Streams** | LINE/올리브영 사례지만 이번 범위 밖 |
-| **Spring Cloud (Gateway, Eureka 등)** | 서비스 2~3개에서는 오버엔지니어링 |
+| **Spring Cloud (Gateway, Eureka 등)** | Kafka 이벤트 통신이 서비스 간 통신을 대체, 서비스 디스커버리 불필요 |
 | **모듈러 모놀리식 전환** | 별도 프로젝트 규모, 로드맵으로만 제시 |
 | **Prometheus + Grafana 모니터링 인프라** | 모니터링/로깅 PoC로 분리 |
 
@@ -266,7 +234,7 @@ Accepted (2026-02-28)
 
 ### Phase 2: 기반 구축 + 기본 이벤트 흐름 (03/02 ~ 03/04, 3일)
 
-**목표:** 4개 서브 프로젝트 스캐폴딩 + Kafka 인프라 + 동기/비동기 기본 동작 확인
+**목표:** 6개 서브 프로젝트 스캐폴딩 + Kafka 인프라 + 동기/비동기 기본 동작 확인
 
 | 태스크 | 설명 |
 |--------|------|
@@ -277,14 +245,14 @@ Accepted (2026-02-28)
 | API 설계 | 주문 API 엔드포인트, 요청/응답 스펙, 에러 코드 |
 | 이벤트 메시지 설계 | Topic 이름, Partition Key 전략, 메시지 포맷(JSON 스키마) |
 | **구현** | |
-| 프로젝트 구조 생성 | Gradle 멀티 프로젝트 (4개 서브 모듈) |
-| Docker Compose 구성 | Kafka + Zookeeper + 4개 서비스 |
-| 동기 페어링 구현 | order-service-sync → inventory-service-sync (재고차감 + 알림 + 배송 REST 직렬 호출) |
+| 프로젝트 구조 생성 | Gradle 멀티 프로젝트 (6개 서브 모듈) |
+| Docker Compose 구성 | Kafka (KRaft 모드, 단일 브로커) + 6개 서비스 |
+| 동기 페어링 구현 | order-service-sync → notification-service-sync + shipping-service-sync (재고차감 후 알림/배송 REST 병렬 호출 — 사용자 블로킹) |
 | 비동기 Fan-out 구현 | order-service-async → Kafka → notification-service-async (Group A) + shipping-service-async (Group B) |
 | 후속 서비스 시뮬레이션 | 알림/배송을 고정 지연(1s) stub으로 구현 |
-| 기본 동작 확인 | 동기(직렬 2s+) / 비동기(즉시 응답 + Fan-out 병렬 1s) 정상 동작 확인 |
+| 기본 동작 확인 | 동기(병렬 REST, 약 1s+, 사용자 블로킹) / 비동기(즉시 응답 + Fan-out 병렬 1s) 정상 동작 확인 |
 
-**Phase 2 완료 기준:** 구현 설계 문서(C4 Component, Docker Compose, API/이벤트 스펙) 완성 + Docker Compose up으로 4개 서비스 + 인프라가 뜨고, curl로 동기/비동기 주문이 정상 동작
+**Phase 2 완료 기준:** 구현 설계 문서(C4 Component, Docker Compose, API/이벤트 스펙) 완성 + Docker Compose up으로 6개 서비스 + 인프라가 뜨고, curl로 동기/비동기 주문이 정상 동작
 
 ### Phase 3: 핵심 검증 (03/05 ~ 03/08, 4일)
 
@@ -380,13 +348,13 @@ Accepted (2026-02-28)
 
 ## ADR (Architecture Decision Records)
 
-### ADR-001: 4개 서브 프로젝트로 동기/비동기 분리
-- **Decision:** 브랜치 분기 대신 4개 서브 프로젝트(동기 페어링 2 + 비동기 페어링 2)로 구성
+### ADR-001: 6개 서브 프로젝트로 동기/비동기 분리
+- **Decision:** 브랜치 분기 대신 6개 서브 프로젝트(동기 3 + 비동기 3)로 구성. 동기: order/notification/shipping-sync, 비동기: order-async + Fan-out Consumer(notification/shipping-async)
 - **Why:** 나란히 놓고 즉시 비교 가능, 포트폴리오에서 "같은 문제를 두 가지 방식으로 풀었다"가 시각적으로 명확
 
 ### ADR-002: Spring Cloud 제외
 - **Decision:** Spring Boot + Docker Compose만 사용, Spring Cloud(Gateway, Eureka 등) 미사용
-- **Why:** 서비스 2~3개에서는 오버엔지니어링. Kafka 이벤트 통신과 장애 격리 시연에 Spring Cloud는 불필요
+- **Why:** 비동기 측 서비스 간 통신은 Kafka 이벤트로 대체되므로 서비스 디스커버리 불필요. 동기 측은 직접 REST 호출로 충분
 
 ### ADR-003: At Least Once + 멱등성 (Exactly Once 제외)
 - **Decision:** Exactly Once Semantics를 사용하지 않고, At Least Once + 멱등성으로 구현
@@ -397,10 +365,28 @@ Accepted (2026-02-28)
 - **Why:** 재고 차감은 동기든 비동기든 빠르다. EDA가 해결하는 문제(팬아웃/장애 격리)는 동시성 제어와 별개. 무리한 연결보다 별도 프로젝트가 자연스러움
 
 ### ADR-005: 후속 서비스 지연은 현실적 시뮬레이션
-- **Decision:** 알림/결제/배송 서비스에 지연을 적용
+- **Decision:** 알림/배송 서비스에 지연을 적용
 - **Why:** 동시성 PoC에서는 100ms sleep이 인위적이었으나, 이번에는 외부 API 호출(SMTP, PG사, 물류)이 현실적으로 느림. 테스트 시나리오 신뢰도 높음
 
 ### ADR-006: 부하 테스트 시 고정 지연으로 변인 통제
 - **Decision:** 메인 성능 비교 테스트에서 후속 서비스 지연을 고정값(1s)으로 설정. 가변 지연(500ms~2s)은 보조 테스트로만 사용
 - **Why:** 가변(랜덤) 지연을 쓰면 테스트 결과의 차이가 아키텍처(동기 vs 비동기) 때문인지 랜덤 지연 때문인지 구분 불가. 고정값으로 변인을 통제해야 순수한 아키텍처 차이를 측정할 수 있음
 - **Trade-off:** 현실에서는 지연이 가변적이므로, 고정값만으로는 현실성이 부족할 수 있음. 이를 보완하기 위해 가변 지연 보조 테스트를 선택적으로 수행
+
+### ADR-007: Kafka 네이밍 컨벤션
+
+**상태:** Accepted (2026-02-28)
+
+**Context:**
+- Phase 2에서 Topic/Consumer Group 이름이 코드, 설정, 다이어그램에 반복 등장한다.
+- 이름 규칙이 없으면 운영 중 역할 식별, 장애 분석, 버전 마이그레이션이 어려워진다.
+- PoC라도 이후 확장(새 Consumer 추가, 버전 분리)을 고려한 최소 규칙이 필요하다.
+
+**Decision:**
+1. Topic: `{domain}.{event}.v{n}` — 예: `order.order-completed.v1`
+2. Consumer Group ID: `{env}.{domain}.{service}.{purpose}.v{n}` — 예: `dev.order.notification.event-consumer.v1`
+3. 동적 값(타임스탬프, 인스턴스 ID)은 Topic/Group ID에 포함하지 않는다.
+
+**Consequences:**
+- 장점: 이름만으로 역할 식별 가능, 로그/모니터링 필터링이 쉬움, 버전 병행 운영이 가능
+- 비용: 네이밍 길이가 다소 길어짐
