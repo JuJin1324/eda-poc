@@ -172,6 +172,37 @@ sequenceDiagram
 
 ## 범위 확정
 
+## ADR: Kafka 네이밍 컨벤션
+
+### 상태
+
+Accepted (2026-02-28)
+
+### Context
+
+- Phase 2에서 Topic/Consumer Group 이름이 코드, 설정, 다이어그램에 반복 등장한다.
+- 이름 규칙이 없으면 운영 중 역할 식별, 장애 분석, 버전 마이그레이션이 어려워진다.
+- PoC라도 이후 확장(새 Consumer 추가, 버전 분리)을 고려한 최소 규칙이 필요하다.
+
+### Decision
+
+1. Topic 이름은 `{domain}.{event}.v{n}` 패턴을 사용한다.
+- 예: `order.order-completed.v1`
+- 원칙: 도메인 포함, 이벤트는 비즈니스 사실(과거형), 버전 명시
+
+2. Consumer Group ID는 `{env}.{domain}.{service}.{purpose}.v{n}` 패턴을 사용한다.
+- 예: `dev.order.notification.event-consumer.v1`
+- 원칙: 환경/도메인/소비 주체/목적/버전 포함
+
+3. 동적 값(타임스탬프, 인스턴스 ID)을 Topic/Group ID에 넣지 않는다.
+- 이유: 배포마다 새 Group으로 인식되어 offset 공유가 깨질 수 있음
+
+### Consequences
+
+- 장점: 이름만으로 역할 식별 가능, 로그/모니터링 필터링이 쉬움, 버전 병행 운영이 가능
+- 비용: 네이밍 길이가 다소 길어짐, 규칙 미준수 시 코드 리뷰에서 교정 필요
+- 운영 지침: 같은 처리 목적은 같은 Group ID를 공유하고, 독립 처리 파이프라인은 다른 Group ID를 사용한다.
+
 ### ✅ In Scope
 
 | 항목 | 이유 |

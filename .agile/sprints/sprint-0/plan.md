@@ -61,10 +61,10 @@
 **완료 목표일:** 2026-02-28
 
 #### Step-0.1.1: Producer/Consumer
-- [ ] 학습 + `docs/concepts/producer-consumer.md` 작성
+- [x] 학습 + `docs/concepts/producer-consumer.md` 작성
   - 메시지 발행 흐름, acks 설정(0/1/all)의 의미
   - Consumer의 poll 메커니즘, offset commit
-- [ ] 🔍 리뷰 완료
+- [x] 🔍 리뷰 완료
 
 #### Step-0.1.2: Topic/Partition
 - [ ] 학습 + `docs/concepts/topic-partition.md` 작성
@@ -122,7 +122,7 @@
 ## Sprint 0 Definition of Done
 
 ### US-0.1 ✅
-- [ ] Step-0.1.1: `docs/concepts/producer-consumer.md` 작성 + 리뷰 완료
+- [x] Step-0.1.1: `docs/concepts/producer-consumer.md` 작성 + 리뷰 완료
 - [ ] Step-0.1.2: `docs/concepts/topic-partition.md` 작성 + 리뷰 완료
 - [ ] Step-0.1.3: `docs/concepts/consumer-group.md` 작성 + 리뷰 완료
 
