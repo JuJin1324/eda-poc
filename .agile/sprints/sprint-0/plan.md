@@ -98,14 +98,14 @@
 - [ ] 🔍 리뷰 완료
 
 #### Step-0.2.2: Dead Letter Queue (DLQ)
-- [ ] 학습 + `docs/concepts/dead-letter-queue.md` 작성
+- [x] 학습 + `docs/concepts/dead-letter-queue.md` 작성
   - DLQ의 목적: 실패 메시지가 전체 파이프라인을 막지 않도록 격리
   - 재시도 정책 (횟수, backoff) → DLQ 이동 흐름
   - 쿠팡 Vitamin MQ의 DLQ 패턴 참고
 - [ ] 🔍 리뷰 완료
 
 #### Step-0.2.3: Partition Key
-- [ ] 학습 + `docs/concepts/partition-key.md` 작성
+- [x] 학습 + `docs/concepts/partition-key.md` 작성
   - Partition Key가 없으면: 라운드 로빈 → 순서 미보장
   - Partition Key 있으면: 같은 키 = 같은 파티션 = 순서 보장
   - 배민: 주문별 이벤트 순서 유지 사례
