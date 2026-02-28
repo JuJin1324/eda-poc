@@ -47,10 +47,12 @@ flowchart TB
 
     subgraph infra["공통 인프라 (Docker Compose)"]
         k6["k6\nLoad Test"]
+        akhq["AKHQ\nKafka UI (:18080)"]
     end
 
     k6 -. "부하 테스트" .-> order_sync
     k6 -. "부하 테스트" .-> order_async
+    akhq -. "토픽/컨슈머 그룹 조회" .-> kafka
 ```
 
 ### 2. 동기 방식 흐름 (Before)
@@ -366,7 +368,7 @@ sequenceDiagram
 
 ### ADR-005: 후속 서비스 지연은 현실적 시뮬레이션
 - **Decision:** 알림/배송 서비스에 지연을 적용
-- **Why:** 동시성 PoC에서는 100ms sleep이 인위적이었으나, 이번에는 외부 API 호출(SMTP, PG사, 물류)이 현실적으로 느림. 테스트 시나리오 신뢰도 높음
+- **Why:** 동시성 PoC에서는 100ms sleep이 인위적이었으나, 이번에는 외부 API 호출(SMTP, 물류/배송 시스템 연동)이 현실적으로 느림. 테스트 시나리오 신뢰도 높음
 
 ### ADR-006: 부하 테스트 시 고정 지연으로 변인 통제
 - **Decision:** 메인 성능 비교 테스트에서 후속 서비스 지연을 고정값(1s)으로 설정. 가변 지연(500ms~2s)은 보조 테스트로만 사용

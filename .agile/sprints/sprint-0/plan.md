@@ -73,10 +73,10 @@
 - [x] 🔍 리뷰 완료
 
 #### Step-0.1.3: Consumer Group
-- [ ] 학습 + `docs/concepts/consumer-group.md` 작성
+- [x] 학습 + `docs/concepts/consumer-group.md` 작성
   - Consumer Group의 파티션 할당 메커니즘
   - 리밸런싱 발생 조건과 영향 (사람인 장애 사례 참고)
-- [ ] 🔍 리뷰 완료
+- [x] 🔍 리뷰 완료
 
 **Acceptance Criteria:**
 - 각 개념을 "왜 필요한지 + 어떻게 동작하는지" 1~2문장으로 설명 가능
@@ -91,7 +91,7 @@
 **완료 목표일:** 2026-03-01
 
 #### Step-0.2.1: At Least Once + 멱등성
-- [ ] 학습 + `docs/concepts/at-least-once-idempotency.md` 작성
+- [x] 학습 + `docs/concepts/at-least-once-idempotency.md` 작성
   - At Most Once / At Least Once / Exactly Once 비교
   - 배민이 Exactly Once를 제거한 이유 (2년간 41건 장애)
   - 멱등성 키 설계 패턴 (orderId 기반 중복 체크)
@@ -124,7 +124,7 @@
 ### US-0.1 ✅
 - [x] Step-0.1.1: `docs/concepts/producer-consumer.md` 작성 + 리뷰 완료
 - [x] Step-0.1.2: `docs/concepts/topic-partition.md` 작성 + 리뷰 완료
-- [ ] Step-0.1.3: `docs/concepts/consumer-group.md` 작성 + 리뷰 완료
+- [x] Step-0.1.3: `docs/concepts/consumer-group.md` 작성 + 리뷰 완료
 
 ### US-0.2 ✅
 - [ ] Step-0.2.1: `docs/concepts/at-least-once-idempotency.md` 작성 + 리뷰 완료

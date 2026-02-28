@@ -2,7 +2,7 @@
 
 ## 왜 필요한가
 
-이벤트 기반 아키텍처의 기본 단위. Producer가 이벤트를 발행하고 Consumer가 구독하는 구조가 없으면 서비스 간 비동기 통신 자체가 불가능하다. 이번 PoC에서 order-service-async가 Producer, inventory-service-async가 Consumer 역할을 한다.
+이벤트 기반 아키텍처의 기본 단위. Producer가 이벤트를 발행하고 Consumer가 구독하는 구조가 없으면 서비스 간 비동기 통신 자체가 불가능하다. 이번 PoC에서 order-service-async가 Producer, notification-service-async / shipping-service-async가 Consumer 역할을 한다.
 
 ---
 
@@ -387,7 +387,7 @@ public class OrderEventProducer {
 }
 ```
 
-### Consumer 코드 (inventory-service-async)
+### Consumer 코드 (notification-service-async)
 
 ```java
 @Service
