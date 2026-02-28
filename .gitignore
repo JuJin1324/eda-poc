@@ -1,0 +1,22 @@
+# IDE
+.idea/
+*.iml
+
+# Build
+build/
+target/
+*.class
+
+# Gradle
+.gradle/
+gradle-wrapper.jar
+
+# Maven
+*.jar
+*.war
+
+# Logs
+*.log
+
+# OS
+.DS_Store
