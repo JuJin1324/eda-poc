@@ -1,21 +1,22 @@
 # EDA PoC - How 구조화
 
 ## Quick Guide (30초 문서 이해 가이드)
-- **핵심 결론:** 이커머스 주문 팬아웃 문제를 동기/비동기 4개 서브 프로젝트로 나란히 구현하고, 정량 비교로 EDA 핵심 가치를 증명한다.
+- **핵심 결론:** 이커머스 주문 팬아웃 문제를 동기/비동기 서브 프로젝트로 나란히 구현하고, 정량 비교로 EDA 핵심 가치를 증명한다.
 - **확정된 결정:** 5개 Phase (개념학습→기반→핵심검증→심화학습→포트폴리오), Spring Cloud 제외, At Least Once + 멱등성
-- **바로 실행할 내용:** Phase 1에서 Kafka 인프라 + 4개 서브 프로젝트 스캐폴딩 + 기본 이벤트 흐름
+- **확정된 결정:** 비동기 방식은 Fan-out 구조 — 주문 완료 이벤트 1개를 notification/shipping 서비스가 독립적으로 동시 소비
+- **바로 실행할 내용:** Phase 2에서 Kafka 인프라 + 서브 프로젝트 스캐폴딩 + 기본 이벤트 흐름
 - **판단 근거:** 사례 조사 5건(배민/쿠팡/LINE/올리브영/사람인) + 동시성 PoC 부하 테스트 교훈
 - **미확정/리스크:** 후속 서비스 지연 시간 구체값(500ms? 1s?), k6 동시 요청 수 최적값
-- **리뷰 요청:** In/Out/Deferred 범위 타당성, Phase 경계, 정량 지표 목표값
 
 ---
 
 ## 2W 요약 (from 2w-brainstorm.md)
 
-- **What:** 이커머스 주문 프로세스에서 후속 처리(알림, 결제, 배송)가 동기 직렬로 묶여 있어 트래픽 증가 시 응답 지연 및 장애 전파 발생 → EDA(Kafka)로 비동기 분리
+- **What:** 이커머스 주문 프로세스에서 후속 처리(알림, 배송)가 동기 직렬로 묶여 있어 트래픽 증가 시 응답 지연 및 장애 전파 발생 → EDA(Kafka) Fan-out으로 비동기 병렬 분리
 - **Why:** 포트폴리오 (채용 시장 능력 검증). JD 키워드 "MSA 경험 우대", "Kafka 사용 경험" 직접 충족
 - **제약 조건:** 2주, 혼자, PoC 수준, 별도 프로젝트 (동시성 PoC와 해결하는 문제가 다름)
-- **가상 시나리오:** 이커머스 주문 프로세스의 팬아웃 문제 (사례 5건 중 4건과 동일 패턴)
+- **가상 시나리오:** 이커머스 주문 완료 후 알림/배송 팬아웃 문제 (사례 5건 중 4건과 동일 패턴)
+- **시나리오 전제:** "주문 완료" = 재고 차감까지 완료된 상태. 이후 알림/배송은 서로 순서 의존성 없는 독립 처리 → Fan-out 적용 가능
 
 ---
 
@@ -27,16 +28,18 @@
 
 ```mermaid
 flowchart TB
-    subgraph async["비동기 페어링 (After)"]
-        order_async["order-service-async\n(Spring Boot :8082)\n주문 API → Kafka 이벤트 발행"]
-        inventory_async["inventory-service-async\n(Spring Boot :8083)\nKafka Consumer 후속처리"]
-        order_async -- "이벤트 발행\n(OrderCompleted)" --> kafka
-        kafka -- "이벤트 구독\n(Consumer Group)" --> inventory_async
+    subgraph async["비동기 (After) — Fan-out"]
+        order_async["order-service-async\n(Spring Boot :8082)\n주문 API → 재고 차감 → Kafka 발행"]
+        notification_async["notification-service-async\n(Spring Boot :8083)\nConsumer Group A — 알림 발송"]
+        shipping_async["shipping-service-async\n(Spring Boot :8084)\nConsumer Group B — 배송 접수"]
+        order_async -- "OrderCompleted\n이벤트 발행" --> kafka
+        kafka -- "Fan-out\n(Group A)" --> notification_async
+        kafka -- "Fan-out\n(Group B)" --> shipping_async
     end
 
-    subgraph sync["동기 페어링 (Before)"]
+    subgraph sync["동기 (Before) — 직렬"]
         order_sync["order-service-sync\n(Spring Boot :8080)\n주문 API → REST 직접 호출"]
-        inventory_sync["inventory-service-sync\n(Spring Boot :8081)\n재고차감 + 후속처리 동기"]
+        inventory_sync["inventory-service-sync\n(Spring Boot :8081)\n재고차감 + 알림 + 배송 동기 직렬"]
         order_sync -- "REST 직접 호출\n(동기/직렬)" --> inventory_sync
     end
 
@@ -57,7 +60,6 @@ sequenceDiagram
     participant OS as order-service-sync
     participant IS as inventory-service-sync
     participant Noti as 알림 (외부 API)
-    participant Pay as 결제 (외부 API)
     participant Ship as 배송 (외부 API)
 
     User->>OS: POST /orders
@@ -65,44 +67,45 @@ sequenceDiagram
     IS-->>OS: 차감 완료
     OS->>Noti: REST: 알림 발송 (고정 1s)
     Noti-->>OS: 완료
-    OS->>Pay: REST: 결제 요청 (고정 1s)
-    Pay-->>OS: 완료
-    OS->>Ship: REST: 배송 요청 (고정 1s)
+    OS->>Ship: REST: 배송 접수 (고정 1s)
     Ship-->>OS: 완료
-    OS-->>User: 주문 완료 응답 (총 3s+)
+    OS-->>User: 주문 완료 응답 (총 2s+)
 
-    Note over OS,Ship: 문제: 후속 서비스 지연이 누적되어 응답 느림<br/>알림/결제/배송 중 하나라도 장애 시 주문 전체 실패
+    Note over OS,Ship: 문제: 후속 처리 지연이 직렬로 누적 (알림 1s + 배송 1s = 2s+)<br/>알림/배송 중 하나라도 장애 시 주문 전체 실패
 ```
 
-### 3. 비동기 방식 흐름 (After)
+### 3. 비동기 방식 흐름 (After) — Fan-out
 
 ```mermaid
 sequenceDiagram
     participant User as 사용자
     participant OA as order-service-async
     participant K as Kafka
-    participant IA as inventory-service-async
+    participant NS as notification-service-async
+    participant SS as shipping-service-async
     participant Noti as 알림 (외부 API)
-    participant Pay as 결제 (외부 API)
     participant Ship as 배송 (외부 API)
     participant DLQ as Dead Letter Queue
 
     User->>OA: POST /orders
-    OA->>OA: 재고 차감
+    OA->>OA: 재고 차감 (DB)
     OA->>K: OrderCompleted 이벤트 발행
-    OA-->>User: 주문 완료 응답 (빠름)
+    OA-->>User: 주문 완료 응답 (즉시)
 
-    K->>IA: 이벤트 전달 (Consumer Group)
-    IA->>Noti: 알림 발송 (고정 1s)
-    IA->>Pay: 결제 요청 (고정 1s)
-    IA->>Ship: 배송 요청 (고정 1s)
+    par Fan-out: 동시 처리
+        K->>NS: 이벤트 전달 (Consumer Group A)
+        NS->>Noti: 알림 발송 (고정 1s)
+    and
+        K->>SS: 이벤트 전달 (Consumer Group B)
+        SS->>Ship: 배송 접수 (고정 1s)
+    end
 
     alt 후속 처리 실패 시
-        IA->>DLQ: 실패 메시지 격리
+        NS->>DLQ: 실패 메시지 격리
         Note over DLQ: 복구 후 재처리
     end
 
-    Note over OA,User: 효과: 주문 응답은 재고 차감까지만 대기<br/>후속 서비스 장애가 주문에 영향 없음
+    Note over OA,User: 효과 1: 주문 응답은 재고 차감까지만 대기 (즉시 반환)<br/>효과 2: 알림/배송이 병렬 처리 → max(1s, 1s) = 1s<br/>효과 3: 알림 장애가 배송에 영향 없음 (장애 격리)
 ```
 
 ### 4-1. 장애 격리 시나리오: Consumer 다운
@@ -112,23 +115,25 @@ sequenceDiagram
     participant User as 사용자
     participant OA as order-service-async
     participant K as Kafka
-    participant IA as inventory-service-async (DOWN)
+    participant NS as notification-service-async (DOWN)
+    participant SS as shipping-service-async
 
-    Note over IA: Consumer 중단 (장애 시뮬레이션)
+    Note over NS: notification Consumer 중단 (장애 시뮬레이션)
 
     User->>OA: POST /orders
     OA->>OA: 재고 차감
     OA->>K: OrderCompleted 이벤트 발행
     OA-->>User: 주문 완료 응답 (정상!)
 
-    Note over K: 메시지 보관 (Consumer Lag 증가)
+    K->>SS: 이벤트 전달 (Group B — 정상)
+    Note over K: Group A 메시지 보관 (Consumer Lag 증가)
 
-    Note over IA: Consumer 복구
+    Note over NS: Consumer 복구
 
-    K->>IA: 밀린 이벤트 재전달
-    IA->>IA: 멱등성 체크 후 처리
+    K->>NS: 밀린 이벤트 재전달
+    NS->>NS: 멱등성 체크 후 처리
 
-    Note over OA,IA: 검증: Producer 100% 정상 + 복구 후 0% 유실
+    Note over OA,NS: 검증 1: Producer 100% 정상 동작<br/>검증 2: shipping은 notification 장애와 무관하게 처리 계속<br/>검증 3: 복구 후 0% 유실
 ```
 
 ### 4-2. 장애 격리 시나리오: 후속 처리 실패 → DLQ
@@ -137,35 +142,35 @@ sequenceDiagram
 sequenceDiagram
     participant OA as order-service-async
     participant K as Kafka
-    participant IA as inventory-service-async
-    participant Pay as 결제 (외부 API)
+    participant NS as notification-service-async
+    participant Noti as 알림 (외부 API)
     participant DLQ as Dead Letter Queue
 
-    K->>IA: OrderCompleted 이벤트 전달
-    IA->>Pay: 결제 요청 (고정 1s)
-    Pay-->>IA: 500 Error (결제 실패)
+    K->>NS: OrderCompleted 이벤트 전달
+    NS->>Noti: 알림 발송 (고정 1s)
+    Noti-->>NS: 500 Error (알림 실패)
 
-    IA->>IA: 재시도 (1~3회)
-    Pay-->>IA: 500 Error (재시도 실패)
+    NS->>NS: 재시도 (1~3회)
+    Noti-->>NS: 500 Error (재시도 실패)
 
-    IA->>DLQ: 실패 메시지 격리
+    NS->>DLQ: 실패 메시지 격리
 
     Note over DLQ: 실패 원인 확인 후 재처리
-    DLQ->>IA: 재처리 트리거
-    IA->>Pay: 결제 재요청
-    Pay-->>IA: 200 OK (성공)
+    DLQ->>NS: 재처리 트리거
+    NS->>Noti: 알림 재발송
+    Noti-->>NS: 200 OK (성공)
 
-    Note over IA,DLQ: 검증: 실패 메시지 유실 없음 + DLQ에서 재처리 성공
+    Note over NS,DLQ: 검증: 실패 메시지 유실 없음 + DLQ에서 재처리 성공
 ```
 
 ### 다이어그램 설명
 
 | 다이어그램 | 보여주는 것 | PoC 검증 포인트 |
 |-----------|-----------|----------------|
-| **C4 Container** | 4개 서브 프로젝트 전체 구조 | 동기/비동기를 나란히 비교하는 구조 |
-| **동기 Sequence** | Before: 직렬 처리의 문제점 | 후속 서비스 지연 누적 → 응답 느림 |
-| **비동기 Sequence** | After: 이벤트 기반 팬아웃 | 주문 응답 빠름 + DLQ 장애 격리 |
-| **장애 격리 4-1** | Consumer 다운 시 Producer 정상 | Kafka 메시지 보관 + 복구 후 재전달 + 멱등성 |
+| **C4 Container** | 전체 서비스 구조 | 동기(직렬) vs 비동기(Fan-out)를 나란히 비교 |
+| **동기 Sequence** | Before: 직렬 처리의 문제점 | 알림(1s) + 배송(1s) 누적 = 2s+ 응답 지연 |
+| **비동기 Sequence** | After: Fan-out 병렬 처리 | 즉시 응답 + 알림/배송 동시 1s + 장애 격리 |
+| **장애 격리 4-1** | Consumer 하나 다운 시 나머지 정상 | shipping은 notification 장애와 무관하게 처리 |
 | **장애 격리 4-2** | 후속 처리 실패 시 DLQ 격리 | 재시도 → 실패 → DLQ 격리 → 재처리 성공 |
 
 ---
@@ -274,10 +279,10 @@ Accepted (2026-02-28)
 | **구현** | |
 | 프로젝트 구조 생성 | Gradle 멀티 프로젝트 (4개 서브 모듈) |
 | Docker Compose 구성 | Kafka + Zookeeper + 4개 서비스 |
-| 동기 페어링 구현 | order-service-sync → inventory-service-sync (REST 직접 호출) |
-| 비동기 페어링 구현 | order-service-async → Kafka → inventory-service-async |
-| 후속 서비스 시뮬레이션 | 알림/결제/배송을 고정 지연(1s) stub으로 구현 |
-| 기본 동작 확인 | 동기/비동기 모두 주문 → 재고차감 → 후속처리 정상 동작 |
+| 동기 페어링 구현 | order-service-sync → inventory-service-sync (재고차감 + 알림 + 배송 REST 직렬 호출) |
+| 비동기 Fan-out 구현 | order-service-async → Kafka → notification-service-async (Group A) + shipping-service-async (Group B) |
+| 후속 서비스 시뮬레이션 | 알림/배송을 고정 지연(1s) stub으로 구현 |
+| 기본 동작 확인 | 동기(직렬 2s+) / 비동기(즉시 응답 + Fan-out 병렬 1s) 정상 동작 확인 |
 
 **Phase 2 완료 기준:** 구현 설계 문서(C4 Component, Docker Compose, API/이벤트 스펙) 완성 + Docker Compose up으로 4개 서비스 + 인프라가 뜨고, curl로 동기/비동기 주문이 정상 동작
 
