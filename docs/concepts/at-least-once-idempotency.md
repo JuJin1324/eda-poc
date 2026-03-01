@@ -144,44 +144,88 @@ CREATE TABLE processed_events (
 );
 ```
 
+Unique Constraint가 `(event_id, event_type)` 조합에 걸려 있으므로 두 Consumer가 동시에 INSERT를 시도해도 DB가 원자적으로 하나만 허용한다. `INSERT IGNORE`는 중복 시 예외 없이 조용히 스킵하고 영향받은 행 수를 반환하므로, 예외를 정상 흐름 제어에 사용하지 않아도 된다.
+
 ```java
+// Repository: INSERT IGNORE로 원자적 처리
+public boolean tryMarkProcessed(String eventId, String eventType) {
+    int rows = jdbcTemplate.update(
+        "INSERT IGNORE INTO processed_events (event_id, event_type, processed_at)" +
+        " VALUES (?, ?, NOW())",
+        eventId, eventType
+    );
+    return rows > 0; // true = 신규, false = 중복 (예외 없음)
+}
+```
+
+```java
+// Consumer: 예외 없이 의도가 명확한 흐름
 @KafkaListener(topics = "order.order-completed.v1")
 public void handleOrderCompleted(
         @Payload OrderCompletedEvent event,
         Acknowledgment ack) {
-    try {
-        // INSERT 실패(중복) 시 DataIntegrityViolationException 발생
-        processedEventRepository.save(
-            new ProcessedEvent(event.getEventId(), "OrderCompleted")
-        );
-        notificationService.send(event);
-        ack.acknowledge();
-    } catch (DataIntegrityViolationException e) {
-        // 중복 메시지 → 이미 처리됨, offset만 커밋
+
+    boolean isNew = processedEventRepository.tryMarkProcessed(
+        event.getEventId(), "OrderCompleted"
+    );
+
+    if (!isNew) {
         log.warn("Duplicate event ignored: {}", event.getEventId());
         ack.acknowledge();
+        return;
     }
+
+    notificationService.send(event);
+    ack.acknowledge();
 }
 ```
 
-**장점:** 별도 인프라 불필요, 트랜잭션과 함께 처리 가능
-**단점:** DB 부하, 오래된 이벤트 ID 정리 정책 필요
+PostgreSQL에서는 문법이 다르다:
+```sql
+INSERT INTO processed_events (event_id, event_type, processed_at)
+VALUES (?, ?, NOW())
+ON CONFLICT (event_id, event_type) DO NOTHING;
+```
+
+**장점:** 별도 인프라 불필요, 원자적 중복 체크, 예외를 정상 흐름 제어에 사용하지 않음
+**단점:** DB 부하, 오래된 이벤트 ID 정리 정책 필요, DB 벤더별 문법 차이
 
 ### 패턴 2: Outbox + 상태 플래그
 
-```sql
--- 처리 대상 테이블에 직접 상태 관리
-ALTER TABLE notifications
-    ADD COLUMN order_event_id VARCHAR(255) UNIQUE;
+비즈니스 테이블에 `order_event_id`를 UNIQUE 컬럼으로 추가한다. 비즈니스 레코드 INSERT 자체가 멱등성 체크를 겸하므로 별도 processed_events 테이블이 필요 없다. 구현 방식은 패턴 1과 동일하며, INSERT 대상 테이블만 다르다.
 
--- 처리 시
-INSERT INTO notifications (order_id, order_event_id, status)
-VALUES (?, ?, 'SENT')
-ON DUPLICATE KEY UPDATE order_event_id = order_event_id; -- 무시
+```sql
+ALTER TABLE notifications
+    ADD COLUMN order_event_id VARCHAR(255);
+
+ALTER TABLE notifications
+    ADD CONSTRAINT uk_notifications_order_event_id UNIQUE (order_event_id);
 ```
 
-**장점:** 비즈니스 테이블과 통합, 처리 상태 추적 용이
-**단점:** 테이블 설계 변경 필요
+`order_event_id`는 멱등성과 추적(어떤 이벤트로 이 알림이 생성됐는가) 두 가지 역할을 겸한다.
+
+**장점:** 별도 processed_events 테이블 불필요, 비즈니스 레코드가 처리 증거를 겸함, 추적 용도 겸비
+**단점:** 테이블 설계 변경 필요, Consumer가 항상 비즈니스 레코드를 생성하는 경우에만 적용 가능 (외부 API 호출만 하는 Consumer에는 사용 불가)
+
+---
+
+### 패턴 1 vs 패턴 2 본질적 차이
+
+두 패턴은 "이벤트 처리 증거를 어디에 남기는가"의 차이다.
+
+| | 패턴 1 (processed_events) | 패턴 2 (Outbox + 상태 플래그) |
+|---|---|---|
+| 이벤트 관심사 | 별도 테이블에 순수하게 분리 | 비즈니스 테이블에 함께 관리 |
+| 처리 증거 | "이 이벤트를 처리했는가?" | "이 이벤트로 무엇이 생성됐는가?" |
+| 적용 조건 | 항상 가능 | 처리 결과로 비즈니스 레코드가 생기는 경우만 |
+
+**패턴 선택 기준:**
+
+```
+이벤트 처리 결과로 비즈니스 레코드(notifications, shipping 등)가 DB에 생성되는가?
+  Yes → 패턴 2: 비즈니스 레코드 존재 자체가 처리 증거를 겸함
+  No  → 패턴 1 필수: 외부 API만 호출하거나 자체 DB가 없는 경우 별도 증거가 필요
+```
 
 ### 패턴 3: Redis SET NX (분산 환경)
 
@@ -243,7 +287,7 @@ spring:
       enable-auto-commit: false   # Manual AckMode 필수
       auto-offset-reset: earliest
     listener:
-      ack-mode: manual_immediate  # 처리 완료 후 즉시 커밋
+      ack-mode: manual            # 처리 완료 후 다음 poll 주기에 배치 커밋 (MANUAL_IMMEDIATE는 매 메시지마다 동기 커밋 → 자원 낭비)
 ```
 
 ```java
@@ -256,11 +300,14 @@ public void handle(
         @Payload OrderCompletedEvent event,
         Acknowledgment ack) {
 
-    // 1. 멱등성 키: orderId + eventType
-    String idempotencyKey = event.getOrderId() + ":OrderCompleted";
+    // 1. INSERT IGNORE로 원자적 중복 체크 + 처리 기록
+    //    isDuplicate(SELECT) + markProcessed(INSERT) 분리 시 경쟁 상태 발생 위험
+    boolean isNew = processedEventService.tryMarkProcessed(
+        event.getOrderId(), "OrderCompleted"
+    );
 
-    if (processedEventService.isDuplicate(idempotencyKey)) {
-        log.warn("중복 이벤트 스킵: {}", idempotencyKey);
+    if (!isNew) {
+        log.warn("중복 이벤트 스킵: {}:OrderCompleted", event.getOrderId());
         ack.acknowledge();
         return;
     }
@@ -268,8 +315,7 @@ public void handle(
     // 2. 비즈니스 처리
     notificationService.send(event);
 
-    // 3. 처리 완료 기록 + offset 커밋
-    processedEventService.markProcessed(idempotencyKey);
+    // 3. offset 커밋
     ack.acknowledge();
 }
 ```
@@ -279,9 +325,9 @@ public void handle(
 | 항목 | 설정 | 이유 |
 |------|------|------|
 | `enable-auto-commit` | `false` | 처리 완료 후 수동 커밋 (At Least Once) |
-| `ack-mode` | `manual_immediate` | 처리 직후 즉시 offset 커밋 |
+| `ack-mode` | `manual` | 처리 완료 후 다음 poll 주기에 배치 커밋 (At Least Once 보장에 충분) |
 | 멱등성 키 | `orderId + eventType` | 이벤트 단위 중복 체크 |
-| 중복 체크 방식 | DB Unique Constraint | 단순, 트랜잭션 통합 가능 |
+| 중복 체크 방식 | INSERT IGNORE (단일 원자 연산) | 경쟁 상태 없음, 예외를 정상 흐름에 사용하지 않음 |
 | Exactly Once | 미사용 | 배민 교훈 — 복잡도 대비 가치 낮음 |
 
 ---

@@ -95,7 +95,7 @@
   - At Most Once / At Least Once / Exactly Once 비교
   - 배민이 Exactly Once를 제거한 이유 (2년간 41건 장애)
   - 멱등성 키 설계 패턴 (orderId 기반 중복 체크)
-- [ ] 🔍 리뷰 완료
+- [x] 🔍 리뷰 완료
 
 #### Step-0.2.2: Dead Letter Queue (DLQ)
 - [x] 학습 + `docs/concepts/dead-letter-queue.md` 작성
