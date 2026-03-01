@@ -4,7 +4,7 @@
 
 핵심은 **"처리 실패한 메시지가 전체 파이프라인을 막지 않도록 격리"**하는 것이다.
 
-Kafka Consumer는 offset 순서대로 메시지를 처리한다. 특정 메시지 처리가 계속 실패하면 해당 메시지에서 멈추고 뒤의 메시지들이 쌓이기 시작한다. DLQ는 이런 "독성 메시지(Poison Pill)"를 별도 토픽으로 격리해 정상 메시지 처리를 계속하게 한다.
+Kafka Consumer는 파티션 내 offset 순서대로 메시지를 처리한다. 특정 메시지 처리가 계속 실패하면 해당 offset에서 멈추고 파티션 내 뒤의 메시지들이 쌓이기 시작한다. DLQ는 이런 "독성 메시지(Poison Pill)"를 별도 토픽으로 격리해 정상 메시지 처리를 계속하게 한다.
 
 ```
 DLQ 없을 때:
@@ -73,8 +73,10 @@ public DefaultErrorHandler errorHandler(KafkaTemplate<String, String> template) 
     DeadLetterPublishingRecoverer recoverer =
         new DeadLetterPublishingRecoverer(template,
             (record, ex) -> new TopicPartition(
-                record.topic() + ".dlq", // 실패한 원본 토픽명 + ".dlq" 토픽으로 전송
-                record.partition()       // 원본과 같은 파티션 번호 사용
+                // 네이밍 컨벤션: {domain}.{service}.dlq.v{n}
+                // record.topic() + ".dlq" 자동 생성 방식은 컨벤션 불일치 → 직접 지정
+                "order.notification.dlq.v1",
+                record.partition()
             ));
 
     // 지수 백오프: 1초 시작, 2배씩 증가, 최대 10초, 최대 3회
@@ -95,6 +97,30 @@ spring:
     consumer:
       group-id: dev.order.notification.dlq-processor.v1
 ```
+
+---
+
+## DLQ는 논리적 개념이다
+
+Kafka 브로커 입장에서 DLQ 토픽은 일반 토픽과 물리적으로 완전히 동일하다.
+
+```
+order.order-completed.v1   (일반 토픽)
+order.notification.dlq.v1  (DLQ 토픽)
+
+→ 둘 다 브로커 디스크에 파티션 디렉터리로 존재
+→ 둘 다 .log Segment 파일에 메시지 저장
+→ 둘 다 offset 기반으로 Consumer가 소비
+→ Kafka 브로커는 "이게 DLQ다"를 전혀 모름
+```
+
+DLQ를 DLQ답게 만드는 것은 전부 애플리케이션과 운영 레벨의 약속이다:
+
+| 레벨 | DLQ를 구성하는 것 |
+|------|----------------|
+| 네이밍 컨벤션 | `.dlq` suffix로 역할 식별 |
+| 애플리케이션 | `DeadLetterPublishingRecoverer`가 실패 메시지를 이 토픽으로 전송 |
+| 운영 | 이 토픽을 모니터링하고 재처리하는 별도 Consumer Group 운영 |
 
 ---
 
@@ -185,10 +211,15 @@ public void handleDlq(
         topic, errorMsg, event.getOrderId());
 
     // 멱등성 체크 후 재처리
-    if (!processedEventService.isDuplicate(event.getOrderId() + ":DLQ")) {
-        notificationService.send(event);
-        processedEventService.markProcessed(event.getOrderId() + ":DLQ");
+    boolean isNew = processedEventService.tryMarkProcessed(
+        event.getOrderId(), "DLQ"
+    );
+    if (!isNew) {
+        log.warn("DLQ 중복 메시지 스킵: {}:DLQ", event.getOrderId());
+        ack.acknowledge();
+        return;
     }
+    notificationService.send(event);
     ack.acknowledge();
 }
 ```
@@ -216,14 +247,103 @@ DLQ로 격리하면:
 
 ---
 
+## 트레이드오프: DLQ와 순서 보장
+
+DLQ는 실패 메시지를 건너뛰고 offset을 전진시킨다. 이는 파티션 내 순서 보장을 의도적으로 포기하는 것이다.
+
+**순서가 깨져도 괜찮은 경우 — 독립 이벤트 (이 PoC)**
+
+```
+파티션 0:
+  offset 0: OrderCompleted(order-123) ← 알림 실패 → DLQ 격리
+  offset 1: OrderCompleted(order-456) ← 다음 처리 → 문제없음
+```
+
+`order-123` 알림 실패와 `order-456` 알림 처리는 서로 의존성이 없다.
+이벤트 간 순서 역전이 비즈니스 정합성에 영향을 미치지 않는다.
+
+**순서가 깨지면 정합성이 파괴되는 경우 — 상태 전이(State Machine)**
+
+```
+파티션 0 (orderId 기반 Partition Key):
+  offset 0: ORDER_CREATED(order-123)
+  offset 1: ORDER_PAID(order-123)    ← 실패 → DLQ 격리
+  offset 2: ORDER_SHIPPED(order-123) ← 처리됨
+                                        → 결제 미확인 상태에서 배송 시작!
+                                        → 비즈니스 정합성 파괴
+```
+
+상태 전이(State Machine) 구조에서는 각 단계가 이전 단계의 성공을 전제로 한다.
+DLQ로 중간 단계를 건너뛰면 다음 단계가 잘못된 상태를 기반으로 처리된다.
+
+**판단 기준:**
+
+| 질문 | DLQ 적용 |
+|------|---------|
+| 파티션 내 메시지들이 서로 독립적인가? (다른 주문, 다른 사용자) | ✅ 안전 |
+| 파티션 내 메시지들이 상태 전이(State Machine) 순서를 전제하는가? | ❌ 위험 — Saga / Circuit Breaker 고려 |
+
+이 PoC는 Fan-out 구조(OrderCompleted 이벤트 하나를 독립적으로 소비)이므로 DLQ 적용이 안전하다.
+
+---
+
+## DLQ 동작 위치와 안티패턴
+
+### DLQ는 Consumer가 살아있을 때만 동작한다
+
+DLQ는 Consumer 내부에서 처리 실패 시 동작한다. Consumer 자체가 다운되면 DLQ로 가지 않고 메시지는 Kafka 파티션에 그대로 쌓인다.
+
+```
+Consumer 완전 다운:
+  → 메시지가 Kafka 파티션에 쌓임 (Consumer Lag 급증)
+  → DLQ로 이동하지 않음
+  → Consumer 재시작 후 밀린 offset부터 이어서 처리
+
+Consumer 살아있음 + 외부 API 다운:
+  → Consumer가 메시지를 가져와 처리 시도
+  → 외부 API 호출 실패 → 재시도 3회 → DLQ
+  → 다음 메시지도 동일 원인으로 실패 → DLQ
+  → 연쇄적으로 전부 DLQ 행
+```
+
+### 안티패턴: DLQ를 시스템 장애의 쓰레기통으로 사용
+
+DLQ의 설계 의도는 **개별 독성 메시지(Poison Pill) 격리**다. 특정 데이터가 잘못됐거나 예외적인 케이스를 처리하기 위한 것이다.
+
+그러나 DLQ가 존재한다는 이유로 시스템 장애를 방치하는 안티패턴이 발생한다:
+
+```
+❌ 안티패턴:
+  외부 API 장애 → 모든 메시지 DLQ 행 → "DLQ가 받아주니까 괜찮네" → 방치
+  → DLQ에 수천 건 쌓임 → 나중에 재처리 폭탄
+
+✅ 올바른 대응:
+  DLQ 유입 속도 모니터링 → 갑자기 대량 유입 시 즉시 알림
+  → 원인 파악 (독성 메시지인가? 시스템 장애인가?)
+  → 시스템 장애라면 DLQ가 아닌 근본 원인 해결
+```
+
+### DLQ 유입 패턴으로 원인 구분
+
+| DLQ 유입 패턴 | 의미 | 대응 |
+|-------------|------|------|
+| 가끔 1~2개 | 개별 독성 메시지 | DLQ 재처리로 충분 |
+| 갑자기 대량 유입 | 시스템 장애 신호 | 즉시 알림 + 근본 원인 조사 |
+
+DLQ 메시지 수 모니터링이 베스트 프랙티스인 이유가 여기 있다. DLQ가 채워지는 **속도**를 감지하지 못하면 시스템 장애가 조용히 방치된다.
+
+---
+
 ## Phase 2 구현 매핑
 
 ```yaml
-# application.yml — DLQ 설정
+# notification-service-async/application.yml
+# 정상 Consumer와 DLQ Consumer는 같은 서비스 안에 공존
+# group-id 기본값은 yml에 설정하되, @KafkaListener의 groupId 속성으로 개별 오버라이드
 spring:
   kafka:
     consumer:
-      group-id: dev.order.notification.event-consumer.v1
+      group-id: dev.order.notification.event-consumer.v1  # 기본값
       enable-auto-commit: false
 ```
 
