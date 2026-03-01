@@ -35,7 +35,7 @@ Consumer: 처리 전 offset commit → 처리 실패 시 메시지 유실
 ```
 acks=all + enable.auto.commit=false + 수동 ack
 
-Producer → Kafka: 발행 확인 (ISR 전체 복제 완료 후 ack)
+Producer → Kafka: 발행 확인 (모든 복제본(ISR, In-Sync Replicas)에 저장 완료 후 ack)
 Kafka   → Consumer: 전달
 Consumer: 처리 완료 후 offset commit → 처리 전 장애 시 재전달
 ```
@@ -57,7 +57,7 @@ Producer: enable.idempotence=true + transactional.id 설정
 Consumer: isolation.level=read_committed
 ```
 
-Producer가 트랜잭션으로 발행하고, Consumer가 커밋된 메시지만 읽는다. Kafka Streams처럼 Kafka → Kafka 파이프라인 내에서는 완전한 EOS가 가능하다.
+Producer가 트랜잭션으로 발행하고, Consumer가 커밋된 메시지만 읽는다. Kafka 토픽을 읽어서 처리한 뒤 다시 Kafka 토픽으로 쓰는 파이프라인(예: Kafka Streams) 내에서는 완전한 EOS가 가능하다.
 
 **한계:** 외부 시스템(DB, 이메일 API, 결제 PG)과의 트랜잭션은 Kafka EOS로 보장할 수 없다. Kafka 내부 트랜잭션과 외부 DB 트랜잭션을 하나의 원자적 단위로 묶을 수 없기 때문이다.
 
@@ -79,7 +79,7 @@ Producer가 트랜잭션으로 발행하고, Consumer가 커밋된 메시지만 
 
 ### 제거 결정의 근거
 
-Kafka Exactly Once는 **트랜잭션 코디네이터**를 통해 동작한다. 이 코디네이터 자체가 SPOF(Single Point of Failure)가 될 수 있고, 트랜잭션 상태 관리 오버헤드가 장애의 원인이 됐다.
+Kafka Exactly Once는 **트랜잭션 코디네이터**(Kafka 브로커 내부에서 트랜잭션 상태를 관리하는 컴포넌트)를 통해 동작한다. 이 코디네이터 자체가 SPOF(Single Point of Failure)가 될 수 있고, 트랜잭션 상태 관리 오버헤드가 장애의 원인이 됐다.
 
 ```
 Exactly Once 내부 동작:

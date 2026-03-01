@@ -22,7 +22,7 @@ DLQ 있을 때:
                                 → 메시지 4 ✅ → 메시지 5 ✅ ... 정상 진행
 ```
 
-> 쿠팡 Vitamin MQ의 핵심 패턴: "실패 메시지 자동 전달, 서비스 복구 후 재처리"
+> 쿠팡 Vitamin MQ(쿠팡 내부 메시지 큐 플랫폼)의 핵심 패턴: "실패 메시지 자동 전달, 서비스 복구 후 재처리"
 
 ---
 
@@ -62,6 +62,10 @@ flowchart LR
 
 ### Spring Kafka 설정
 
+Spring Kafka는 재시도와 DLQ 전달을 `DefaultErrorHandler` 하나로 설정한다.
+- `DefaultErrorHandler`: Consumer 처리 실패 시 재시도 횟수와 간격을 제어하는 에러 핸들러
+- `DeadLetterPublishingRecoverer`: 재시도를 모두 소진한 메시지를 지정한 DLQ 토픽으로 발행하는 컴포넌트
+
 ```java
 @Bean
 public DefaultErrorHandler errorHandler(KafkaTemplate<String, String> template) {
@@ -69,7 +73,8 @@ public DefaultErrorHandler errorHandler(KafkaTemplate<String, String> template) 
     DeadLetterPublishingRecoverer recoverer =
         new DeadLetterPublishingRecoverer(template,
             (record, ex) -> new TopicPartition(
-                record.topic() + ".dlq", record.partition()
+                record.topic() + ".dlq", // 실패한 원본 토픽명 + ".dlq" 토픽으로 전송
+                record.partition()       // 원본과 같은 파티션 번호 사용
             ));
 
     // 지수 백오프: 1초 시작, 2배씩 증가, 최대 10초, 최대 3회
@@ -206,6 +211,7 @@ DLQ로 격리하면:
 ```
 
 > `consumer_lag = latest_offset - current_offset`
+> (Producer가 마지막으로 발행한 위치 - Consumer가 마지막으로 처리한 위치 = 아직 처리 안 된 메시지 수)
 > Consumer Lag이 갑자기 증가하면 DLQ 또는 처리 지연 여부를 먼저 확인한다.
 
 ---
