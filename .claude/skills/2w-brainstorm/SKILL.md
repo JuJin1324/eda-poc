@@ -71,6 +71,10 @@ user-invocable: true
 - [ ] **패턴이 반복되면** (3회+) `problem-solving-principles.md`에 승격했나?
 - [ ] **`/1h-agile-phase` 실행 안내**했나?
 
+> 💡 **이 산출물은 Planning MVP다.**
+> 제한된 정보 안에서의 최선이며, 학습하면서 계속 업데이트하는 것이 정상이다.
+> 계획이 안 바뀌면 학습이 없었다는 신호. → `problem-solving-principles.md` "12. 계획 MVP 원칙" 참조
+
 > **상세 규칙은 `problem-solving-principles.md` 참조**
 
 ## 작동 방식 (Workflow)

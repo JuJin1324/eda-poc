@@ -1,6 +1,9 @@
 ---
 name: us-complete
-description: "US(User Story) 완료 시 summary 문서를 작성하고 커밋을 요청합니다."
+description: "US(User Story) 완료 시 US 회고 문서를 작성하고 커밋을 요청합니다."
+allowed-tools: Read,Write,Edit,Glob,Grep,Bash
+disable-model-invocation: false
+user-invocable: true
 ---
 
 # US Complete
