@@ -102,14 +102,14 @@
   - DLQ의 목적: 실패 메시지가 전체 파이프라인을 막지 않도록 격리
   - 재시도 정책 (횟수, backoff) → DLQ 이동 흐름
   - 쿠팡 Vitamin MQ의 DLQ 패턴 참고
-- [ ] 🔍 리뷰 완료
+- [x] 🔍 리뷰 완료
 
 #### Step-0.2.3: Partition Key
 - [x] 학습 + `docs/concepts/partition-key.md` 작성
   - Partition Key가 없으면: 라운드 로빈 → 순서 미보장
   - Partition Key 있으면: 같은 키 = 같은 파티션 = 순서 보장
   - 배민: 주문별 이벤트 순서 유지 사례
-- [ ] 🔍 리뷰 완료
+- [x] 🔍 리뷰 완료
 
 **Acceptance Criteria:**
 - 각 개념을 "왜 필요한지 + 어떻게 동작하는지" 1~2문장으로 설명 가능
@@ -127,14 +127,14 @@
 - [x] Step-0.1.3: `docs/concepts/consumer-group.md` 작성 + 리뷰 완료
 
 ### US-0.2 ✅
-- [ ] Step-0.2.1: `docs/concepts/at-least-once-idempotency.md` 작성 + 리뷰 완료
-- [ ] Step-0.2.2: `docs/concepts/dead-letter-queue.md` 작성 + 리뷰 완료
-- [ ] Step-0.2.3: `docs/concepts/partition-key.md` 작성 + 리뷰 완료
+- [x] Step-0.2.1: `docs/concepts/at-least-once-idempotency.md` 작성 + 리뷰 완료
+- [x] Step-0.2.2: `docs/concepts/dead-letter-queue.md` 작성 + 리뷰 완료
+- [x] Step-0.2.3: `docs/concepts/partition-key.md` 작성 + 리뷰 완료
 
 ### 최종 검증
-- [ ] 6개 개념 모두 "왜 필요한지 + 어떻게 동작하는지" 설명 가능
-- [ ] Phase 2 구현 시 각 개념이 코드/설정의 어디에 반영되는지 매핑 완료
-- [ ] US별 완료 목표일 대비 실제 완료일 기록 (선행/지연 판단 가능)
+- [x] 6개 개념 모두 "왜 필요한지 + 어떻게 동작하는지" 설명 가능
+- [x] Phase 2 구현 시 각 개념이 코드/설정의 어디에 반영되는지 매핑 완료
+- [x] US별 완료 목표일 대비 실제 완료일 기록 (선행/지연 판단 가능)
 
 ---
 
