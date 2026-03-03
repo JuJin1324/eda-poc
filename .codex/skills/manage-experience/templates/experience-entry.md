@@ -1,0 +1,11 @@
+### EXP-XXX: [짧은 제목]
+- status: validated
+- date: YYYY-MM-DD
+- situation: [어떤 상황에서]
+- signal: [문제가 드러난 신호]
+- choice: [무엇을 선택/변경했는지]
+- result: [실행 결과와 관측]
+- condition: [다음에 재사용할 조건]
+- caution: [주의사항/부작용]
+- related_artifacts:
+  - [관련 문서/파일 경로]
