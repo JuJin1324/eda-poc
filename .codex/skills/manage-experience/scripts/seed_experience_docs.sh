@@ -19,6 +19,7 @@ SKILLS=(
   "record-adr"
   "sync-agent-skills"
   "manage-experience"
+  "migrate-legacy-artifacts"
 )
 
 for skill in "${SKILLS[@]}"; do
@@ -173,7 +174,7 @@ for skill in "${SKILLS[@]}"; do
       e2_condition="복수 작업자가 동시에 plan 파일을 수정할 때"
       e3_situation="Blocker를 별도 채널에만 기록해 현황 문서와 분리된 상황"
       e3_signal="회의 시 blocker 최신 상태를 찾는 시간이 길어짐"
-      e3_choice="sprint-plan.md의 Blockers 섹션을 단일 소스로 사용"
+      e3_choice="01-sprint-plan.md의 Blockers 섹션을 단일 소스로 사용"
       e3_result="모니터링 결과와 대응 논의가 즉시 연결됨"
       e3_condition="외부 의존 이슈가 잦은 스프린트"
       ;;
@@ -230,6 +231,24 @@ for skill in "${SKILLS[@]}"; do
       e3_choice="실행 전에는 validated 상위 3개만 확인"
       e3_result="참조 비용을 줄이면서 재사용률 유지"
       e3_condition="스프린트 시작 전 빠른 의사결정이 필요할 때"
+      ;;
+    migrate-legacy-artifacts)
+      title="Migrate Legacy Artifacts"
+      e1_situation="dry-run 없이 apply를 실행해 기존 신버전 산출물 덮어쓰기 위험이 있었던 상황"
+      e1_signal="대상 파일이 이미 존재하는데 최신성 검토가 안 됨"
+      e1_choice="항상 dry-run 결과를 먼저 보고 apply 여부를 결정"
+      e1_result="덮어쓰기 사고를 사전에 차단"
+      e1_condition="기존 루프 산출물이 일부 존재하는 프로젝트"
+      e2_situation="자동 루프 감지가 의도와 다른 loop를 선택한 상황"
+      e2_signal="문서가 진행 중 루프에 섞여 히스토리 추적이 어려워짐"
+      e2_choice="중요 마이그레이션은 --loop 값을 명시"
+      e2_result="루프 경계가 유지되어 후속 스킬 입력 안정화"
+      e2_condition="복수 루프를 병행 운영하는 프로젝트"
+      e3_situation="파일명만 맞추고 문서 내부 구조 점검을 생략한 상황"
+      e3_signal="후속 스킬 실행 중 섹션 누락으로 수동 보정 반복"
+      e3_choice="마이그레이션 직후 템플릿 기준으로 구조 점검 수행"
+      e3_result="후속 define/design 단계 재작업 감소"
+      e3_condition="오래된 레거시 템플릿 문서를 재활용할 때"
       ;;
     *)
       echo "Unknown skill: ${skill}" >&2

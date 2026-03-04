@@ -40,7 +40,7 @@
 - date: 2026-03-03
 - situation: Blocker를 별도 채널에만 기록해 현황 문서와 분리된 상황
 - signal: 회의 시 blocker 최신 상태를 찾는 시간이 길어짐
-- choice: sprint-plan.md의 Blockers 섹션을 단일 소스로 사용
+- choice: 01-sprint-plan.md의 Blockers 섹션을 단일 소스로 사용
 - result: 모니터링 결과와 대응 논의가 즉시 연결됨
 - condition: 외부 의존 이슈가 잦은 스프린트
 - caution: 루프 목표를 벗어나는 확장은 별도 의사결정으로 분리한다.

@@ -6,7 +6,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 # Design Implementation
 
 ## 목적
-`.agile/loops/loop-vN/design-phase.md`에서 정의된 US를 실제 구현 가능한 상세 설계로 변환한다.
+`.agile/loops/loop-vN/04-design-phase.md`에서 정의된 US를 실제 구현 가능한 상세 설계로 변환한다.
 
 핵심 원칙:
 - 바퀴를 새로 만들지 않는다: 기술 스택 결정 전 웹 검색으로 재사용 가능한 라이브러리/서비스를 먼저 검토한다.
@@ -26,12 +26,12 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 구현 실행 스킬로 전달 가능한 설계 산출물 생성
 
 ## 입력
-- `.agile/loops/loop-vN/design-phase.md`
-- `.agile/loops/loop-vN/sprint/sprint-plan.md`
+- `.agile/loops/loop-vN/04-design-phase.md`
+- `.agile/loops/loop-vN/sprint/01-sprint-plan.md`
 - `.agile/context/tech-stack.md` (있다면 우선 사용)
 
 ## 출력물
-- `.agile/loops/loop-vN/design-implementation.md`
+- `.agile/loops/loop-vN/05-design-implementation.md`
 - `.agile/context/tech-stack.md` (없으면 생성)
 
 템플릿:
@@ -51,7 +51,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 파일이 있으면: "기존 기술 스택 문서를 그대로 사용할지" 사용자에게 확인
 - 파일이 없으면: 사용자에게 기술 스택 입력을 받고 `templates/tech-stack.md` 형식으로 저장
 - 저장 경로: `.agile/context/tech-stack.md`
-- 확정된 스택을 `.agile/loops/loop-vN/design-implementation.md`에 링크
+- 확정된 스택을 `.agile/loops/loop-vN/05-design-implementation.md`에 링크
 
 ### 2단계. 라이브러리/서비스 후보 웹 검색
 - 구현 목적에 맞는 라이브러리/서비스 후보를 웹 검색으로 수집
@@ -118,7 +118,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - `tech-stack.md` 확인/확정 완료
 - 파일이 없던 경우 사용자 입력 기반으로 `tech-stack.md` 생성/저장 완료
 - 웹 검색 신규 후보가 있던 경우 `tech-stack.md` 반영 여부 확인/기록 완료
-- `.agile/loops/loop-vN/design-implementation.md` 작성 완료
+- `.agile/loops/loop-vN/05-design-implementation.md` 작성 완료
 - 기능 목록 정리 완료
 - Sequence/Flowchart 포함
 - C4 Container 게이트 기록 완료 (AI 추천 + 사용자 선택)

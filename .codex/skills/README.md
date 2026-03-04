@@ -15,6 +15,7 @@
 - `record-adr`: Architecture Decision Record 생성/관리
 - `sync-agent-skills`: 다른 에이전트 스킬을 Codex 형식으로 동기화
 - `manage-experience`: 스킬별 경험 문서 seed/log/promote 운영
+- `migrate-legacy-artifacts`: 다양한 프로젝트의 구버전 산출물을 자동 탐색해 신버전 `.agile/loops/loop-vN/` 입력 경로로 마이그레이션
 
 ## Legacy Skills
 

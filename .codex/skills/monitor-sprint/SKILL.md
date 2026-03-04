@@ -29,7 +29,7 @@ description: "현재 Sprint의 진행 상황을 시각화하여 보여줍니다.
 └── loops/
     └── loop-vN/
         └── sprint/
-            └── sprint-plan.md        # Sprint 계획 (진행 상황 포함)
+            └── 01-sprint-plan.md     # Sprint 계획 (진행 상황 포함)
 ```
 
 ## 참고 문서
@@ -44,12 +44,12 @@ description: "현재 Sprint의 진행 상황을 시각화하여 보여줍니다.
 ### Step 1: 현재 Sprint 확인
 
 - `.agile/loops/`에서 최신 `loop-vN` 확인
-- 해당 loop의 `sprint/sprint-plan.md` 존재 확인
+- 해당 loop의 `sprint/01-sprint-plan.md` 존재 확인
 - 없으면 → `/plan-sprint` 권장
 
 ### Step 2: Sprint Plan 파일 파싱
 
-**파일 읽기:** `.agile/loops/loop-vN/sprint/sprint-plan.md`
+**파일 읽기:** `.agile/loops/loop-vN/sprint/01-sprint-plan.md`
 
 **태스크 상태 집계:**
 - `[x]` → Completed
@@ -95,7 +95,7 @@ description: "현재 Sprint의 진행 상황을 시각화하여 보여줍니다.
 
 ---
 
-💡 Tip: sprint-plan.md 파일을 직접 수정해서 진행 상황을 업데이트하세요!
+💡 Tip: 01-sprint-plan.md 파일을 직접 수정해서 진행 상황을 업데이트하세요!
      완료한 태스크는 [ ]를 [x]로 변경하면 됩니다.
 ```
 
@@ -235,7 +235,7 @@ Sprint Plan에 US 구조가 있는 경우:
 
 ### Blockers 표시
 
-sprint-plan.md에 Blockers 섹션이 있으면:
+01-sprint-plan.md에 Blockers 섹션이 있으면:
 
 ```
 ⚠️ Blockers (1)
@@ -248,7 +248,7 @@ sprint-plan.md에 Blockers 섹션이 있으면:
 
 ### 진행 상황 업데이트 방법
 
-**1. sprint-plan.md 파일 직접 수정**
+**1. 01-sprint-plan.md 파일 직접 수정**
 ```markdown
 # Sprint 1: DB Lock 구현
 
@@ -276,20 +276,20 @@ sprint-plan.md에 Blockers 섹션이 있으면:
 
 ### 1. 사용자 주도권 유지
 
-- ✅ AI는 읽기만 함 (sprint-plan.md 수정 안 함)
+- ✅ AI는 읽기만 함 (01-sprint-plan.md 수정 안 함)
 - ✅ 사용자가 직접 [ ]를 [x]로 변경
 - ✅ AI는 시각화만 제공
 
 ### 2. 실시간 반영
 
-- sprint-plan.md를 수정하면 즉시 `/monitor-sprint`에 반영
+- 01-sprint-plan.md를 수정하면 즉시 `/monitor-sprint`에 반영
 - 별도 동기화 작업 불필요
 
 ---
 
 ## ✅ AI가 해야 할 것
 
-- sprint-plan.md 파일 읽기 및 파싱
+- 01-sprint-plan.md 파일 읽기 및 파싱
 - 태스크 상태 집계 (Completed, In Progress, To Do)
 - 진행률 계산 및 Progress Bar 생성
 - 남은 기간 계산
@@ -299,7 +299,7 @@ sprint-plan.md에 Blockers 섹션이 있으면:
 
 ## ❌ AI가 하지 말아야 할 것
 
-- sprint-plan.md 파일 수정
+- 01-sprint-plan.md 파일 수정
 - 사용자 대신 태스크 상태 변경
 - 임의로 태스크 추가/삭제
 - 진행 상황 평가 또는 조언 (순수하게 시각화만)
@@ -310,7 +310,7 @@ sprint-plan.md에 Blockers 섹션이 있으면:
 
 진행 상황 확인 후:
 
-1. **sprint-plan.md 파일 수정** - 완료한 태스크 체크
+1. **01-sprint-plan.md 파일 수정** - 완료한 태스크 체크
 2. **`/monitor-sprint`** - 다시 현황 확인
 3. **`/plan-sprint`** - Sprint 완료/회고 및 다음 라운드 결정
 
@@ -320,7 +320,7 @@ sprint-plan.md에 Blockers 섹션이 있으면:
 **최종 업데이트:** 2026-02-25
 **변경 사항:**
 - **v3.1.0:** US 일정 추적 추가
-  - `sprint-plan.md`의 `완료 목표일` 기반으로 US 상태(Ahead/On-track/Delayed) 자동 분류
+  - `01-sprint-plan.md`의 `완료 목표일` 기반으로 US 상태(Ahead/On-track/Delayed) 자동 분류
   - 상태별 집계와 US별 일정 상태 표 출력 포맷 추가
   - 목표일 누락/형식 오류 시 `Unknown` 처리 규칙 추가
 - **Breaking:** Iteration 중간 계층 제거, Sprint > US 2단계 구조로 단순화

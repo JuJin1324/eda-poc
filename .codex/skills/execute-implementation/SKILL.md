@@ -6,7 +6,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 # Execute Implementation
 
 ## 목적
-`.agile/loops/loop-vN/design-implementation.md`를 바탕으로 코드를 구현하고 검증한다.
+`.agile/loops/loop-vN/05-design-implementation.md`를 바탕으로 코드를 구현하고 검증한다.
 
 핵심 원칙:
 - US 단위로 구현을 진행하고, 필요 시 Step 상세를 보강한다.
@@ -22,12 +22,12 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 구현 결과 기록
 
 ## 입력
-- `.agile/loops/loop-vN/design-implementation.md`
-- `.agile/loops/loop-vN/sprint/sprint-plan.md`
+- `.agile/loops/loop-vN/05-design-implementation.md`
+- `.agile/loops/loop-vN/sprint/01-sprint-plan.md`
 
 ## 출력물
 - 코드 변경사항
-- `.agile/loops/loop-vN/execute-implementation-us-N.M.md`
+- `.agile/loops/loop-vN/06-execute-implementation-us-N.M.md`
 
 템플릿:
 - `templates/execute-implementation-vN.md`
@@ -64,7 +64,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 실패 시 원인/수정 기록
 
 ### 6단계. 실행 결과 문서화
-- `.agile/loops/loop-vN/execute-implementation-us-N.M.md`에 결과, 증적, 남은 리스크 기록
+- `.agile/loops/loop-vN/06-execute-implementation-us-N.M.md`에 결과, 증적, 남은 리스크 기록
 - 코드 변경사항과 US/Step 관계를 매핑 표로 기록
 - 핵심 구현 의도(왜 이렇게 구현했는지)를 설명
 
@@ -78,7 +78,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 대상 US 구현 완료
 - 테스트/검증 결과 기록 완료
 - 컨벤션 체크리스트 확인 완료
-- `.agile/loops/loop-vN/execute-implementation-us-N.M.md` 작성 완료
+- `.agile/loops/loop-vN/06-execute-implementation-us-N.M.md` 작성 완료
 - 코드-요구사항 매핑 및 구현 의도 설명 완료
 
 ## 다음 단계
