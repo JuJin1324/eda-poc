@@ -30,5 +30,5 @@
 - Next: `/define-2w` | `/design-phase` | 종료
 - 이유:
 - 다음 버전 파일:
-  - Define 2W: `.agile/loops/loop-vN+1/01-define-2w.md`
-  - Design Phase: `.agile/loops/loop-vN+1/04-design-phase.md`
+  - Define 2W: `.agile/loops/loop-vN+1/01-02-define-2w.md`
+  - Design Phase: `.agile/loops/loop-vN+1/02-design-phase.md`

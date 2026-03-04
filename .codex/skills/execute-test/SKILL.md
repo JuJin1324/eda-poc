@@ -6,7 +6,7 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 # Execute Test
 
 ## 목적
-`.agile/loops/loop-vN/07-design-test-us-N.M.md`를 기반으로 테스트를 구현/실행하고 결과를 검증한다.
+`.agile/loops/loop-vN/05-design-test-us-N.M.md`를 기반으로 테스트를 구현/실행하고 결과를 검증한다.
 
 핵심 원칙:
 - P0부터 실행해 리스크를 먼저 낮춘다.
@@ -20,12 +20,12 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 - 재검증 및 상태 갱신
 
 ## 입력
-- `.agile/loops/loop-vN/07-design-test-us-N.M.md`
-- `.agile/loops/loop-vN/06-execute-implementation-us-N.M.md`
+- `.agile/loops/loop-vN/05-design-test-us-N.M.md`
+- `.agile/loops/loop-vN/04-execute-implementation-us-N.M.md`
 
 ## 출력물
 - 테스트 코드 변경사항
-- `.agile/loops/loop-vN/08-execute-test-us-N.M.md`
+- `.agile/loops/loop-vN/06-execute-test-us-N.M.md`
 
 템플릿:
 - `templates/execute-test-us-vN.md`
@@ -63,7 +63,7 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 - 결함을 구현/설계로 피드백하지 않음
 
 ## 완료 조건
-- `.agile/loops/loop-vN/08-execute-test-us-N.M.md` 작성 완료
+- `.agile/loops/loop-vN/06-execute-test-us-N.M.md` 작성 완료
 - P0 실행 결과 기록 완료
 - 실패 항목 원인/재현/조치 기록 완료
 - 재검증 결과 반영 완료

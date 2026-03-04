@@ -14,7 +14,7 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - 질문은 최소화하고, 모호성은 스프린트 학습으로 줄인다
 - 사용자가 말한 방법(How)에서 무엇/왜를 역으로 도출한다
 - MVP 범위 명확화는 `design-phase`에서 수행하고, 2W는 문제 정의까지 책임진다
-- 이전 `04-design-phase.md`가 있으면 다음 Phase 연속성 게이트를 먼저 통과한다
+- 이전 design-phase 문서(`02-design-phase.md`, legacy: `04-design-phase.md`)가 있으면 다음 Phase 연속성 게이트를 먼저 통과한다
 - 방법(How) 상세는 여기서 하지 않고 `/design-phase`로 넘긴다
 
 ## 이 스킬이 메인으로 담당하는 것
@@ -28,11 +28,13 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - 다음 단계 결정 (진행/보류/중단)
 
 ## 출력물
-- `.agile/loops/loop-vN/01-define-2w.md`
-- `.agile/loops/loop-vN/02-define-2w-case-study.md` (선택: 사례 연구 실행 시 필수)
-- `.agile/loops/loop-vN/03-define-2w-patterns.md` (선택: 패턴 연구 실행 시 필수)
+- `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md` (선택: 이전 `02-design-phase.md` 존재 시 필수)
+- `.agile/loops/loop-vN/01-02-define-2w.md`
+- `.agile/loops/loop-vN/01-03-define-2w-case-study.md` (선택: 사례 연구 실행 시 필수)
+- `.agile/loops/loop-vN/01-04-define-2w-patterns.md` (선택: 패턴 연구 실행 시 필수)
 
 템플릿:
+- `templates/define-2w-phase-briefing-vN.md`
 - `templates/define-2w-vN.md`
 - `templates/define-2w-case-study-vN.md`
 - `templates/define-2w-patterns-vN.md`
@@ -49,17 +51,19 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 ### 1단계. 준비
 - `references/philosophy.md` 핵심 원칙 확인
 - `.agile/loops/loop-vN/` 디렉터리 확인/생성
-- 직전 루프의 `04-design-phase.md` 존재 여부 확인
+- 직전 루프의 design-phase 문서 존재 여부 확인 (`02-design-phase.md`, legacy: `04-design-phase.md`)
 - 직전 루프의 sprint 진행 문서(`sprint/02-sprint-status.md`, `sprint/04-sprint-retrospective.md`) 존재 여부 확인
 
 확인 경로(예):
-- `.agile/loops/loop-vN-1/04-design-phase.md`
-- 또는 가장 최신 루프의 `04-design-phase.md`
+- `.agile/loops/loop-vN-1/02-design-phase.md`
+- 또는 가장 최신 루프의 `02-design-phase.md`
+- (legacy) `.agile/loops/loop-vN-1/04-design-phase.md`
+- (legacy) 또는 가장 최신 루프의 `04-design-phase.md`
 - `.agile/loops/loop-vN-1/sprint/02-sprint-status.md`
 - `.agile/loops/loop-vN-1/sprint/04-sprint-retrospective.md`
 
 ### 2단계. Phase 연속성 게이트
-직전 `04-design-phase.md`가 있으면 **사용자 선택을 받기 전에** 다음을 먼저 브리핑한다.
+직전 design-phase 문서(`02-design-phase.md`, legacy: `04-design-phase.md`)가 있으면 **사용자 선택을 받기 전에** 다음을 먼저 브리핑한다.
 
 - 감지 대상:
   - 다음 후보 Phase(보통 `Phase-2`, `Phase-3`)
@@ -76,13 +80,19 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 3. `[AI 추천] {recommendation}. 근거: {reason}.`
 4. `[선택 요청] \`연속 진행\` 또는 \`새로 시작\` 중 하나를 선택해달라.`
 
+문서 산출 규칙:
+- `templates/define-2w-phase-briefing-vN.md`로
+  `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md`를 먼저 작성한다.
+- 위 문서의 `사용자 전달 원문(고정 포맷)` 4줄을 사용자에게 **그대로 출력**한 뒤 선택을 받는다.
+- 브리핑만 하고 선택을 건너뛰거나, 선택만 받고 브리핑 문서를 생략하면 안 된다.
+
 - 사용자 선택:
   - `연속 진행` | `새로 시작`
 
 게이트 결과:
 - `연속 진행`: 이번 2W는 "다음 Phase 실행을 위한 What/Why"로 정의
 - `새로 시작`: 기존 Phase 흐름을 참고만 하고, 신규 2W로 정의
-- `이전 04-design-phase 없음`: 신규 2W로 진행
+- `이전 design-phase 문서 없음`: 신규 2W로 진행
 
 ### 3단계. 단일 입력 수집
 2단계에서 사용자 선택이 확정되면, 입력 수집 전에 아래를 먼저 사용자에게 짧게 브리핑한다.
@@ -97,7 +107,7 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
    - 연속 진행: `위 맥락을 기준으로 지금 바꾸고 싶은 점/유지할 점/추가하고 싶은 점을 자유롭게 말해달라.`
    - 새로 시작: `직전 설계는 참고로만 두고, 이번에 새로 정의할 문제를 자유롭게 말해달라.`
 
-직전 `04-design-phase.md`가 없으면 아래 한 가지를 묻는다.
+직전 design-phase 문서가 없으면 아래 한 가지를 묻는다.
 - "지금 무엇을 하고 싶은지, 떠오르는 방식/이유/불편한 점까지 자유롭게 말해달라"
 
 ### 4단계. 입력 기반 What/Why 역추출
@@ -124,7 +134,7 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - `진행`: 사례 연구 실행
   - 최대 3개 사례만 조사
   - 각 사례는 3줄 요약
-  - 결과를 `.agile/loops/loop-vN/02-define-2w-case-study.md`에 기록
+  - 결과를 `.agile/loops/loop-vN/01-03-define-2w-case-study.md`에 기록
   - 2W 문서에는 핵심 반영점만 요약
 
 ### 6단계. 안티패턴/베스트 프랙티스 연구 판단 게이트
@@ -139,12 +149,13 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
   - 안티패턴 최대 3개 조사
   - 베스트 프랙티스 최대 3개 조사
   - 항목당 3줄 요약
-  - 결과를 `.agile/loops/loop-vN/03-define-2w-patterns.md`에 기록
+  - 결과를 `.agile/loops/loop-vN/01-04-define-2w-patterns.md`에 기록
   - 2W 문서에는 핵심 반영점만 요약
 
 ### 7단계. 2W vN 문서화
-`templates/define-2w-vN.md`로 `.agile/loops/loop-vN/01-define-2w.md`를 작성한다.
+`templates/define-2w-vN.md`로 `.agile/loops/loop-vN/01-02-define-2w.md`를 작성한다.
 - Phase 연속성 게이트 결과(AI 추천 + 사용자 선택 + 적용 Phase) 기록
+- 이전 phase 문서가 있으면 브리핑 결과 파일 경로 기록
 - 선택 전 고정 브리핑 기록(진행상황 + 다음 Phase + 추천 + 선택 요청)
 - 이전 phase 문서가 있으면 사전 브리핑 기록(요약 + AI 의견 + 사용자 반응)
 - 사용자 자유 입력 원문
@@ -177,6 +188,7 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 
 ## 완료 조건
 - Phase 연속성 게이트 기록 완료 (이전 phase 존재 시 필수)
+- 이전 phase 문서 존재 시 `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md` 작성 완료
 - 이전 phase 문서 존재 시 선택 전 고정 브리핑(진행상황/다음 Phase/추천/선택 요청) 전달 완료
 - 이전 phase 문서 존재 시 사전 브리핑 전달/기록 완료
 - 단일 자유 입력 수집 완료
@@ -184,10 +196,10 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - 문제 정의 1문장(What+Why 통합) 확정
 - 성공 기준 1개, 경계 1개 확정
 - 사례 연구 게이트 기록 완료 (AI 추천 + 사용자 선택)
-- 사례 연구를 실행했다면 `.agile/loops/loop-vN/02-define-2w-case-study.md` 작성 완료
+- 사례 연구를 실행했다면 `.agile/loops/loop-vN/01-03-define-2w-case-study.md` 작성 완료
 - 패턴 연구 게이트 기록 완료 (AI 추천 + 사용자 선택)
-- 패턴 연구를 실행했다면 `.agile/loops/loop-vN/03-define-2w-patterns.md` 작성 완료
-- `.agile/loops/loop-vN/01-define-2w.md` 작성 완료
+- 패턴 연구를 실행했다면 `.agile/loops/loop-vN/01-04-define-2w-patterns.md` 작성 완료
+- `.agile/loops/loop-vN/01-02-define-2w.md` 작성 완료
 - 진행/보류/중단 결정 완료
 
 ## 다음 단계

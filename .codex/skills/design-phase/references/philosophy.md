@@ -29,4 +29,4 @@ flowchart LR
 - Metric 최소화: Leading 1개, Outcome 1개만 둔다.
 
 ## 완료의 의미
-- design-phase 완료는 `.agile/loops/loop-vN/04-design-phase.md`에 Phase/US/지표/완료조건이 확정되어 스프린트 즉시 착수 가능한 상태를 의미한다.
+- design-phase 완료는 `.agile/loops/loop-vN/02-design-phase.md`에 Phase/US/지표/완료조건이 확정되어 스프린트 즉시 착수 가능한 상태를 의미한다.

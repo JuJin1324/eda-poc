@@ -84,12 +84,12 @@ resolve_auto_source() {
   local candidates=("$@")
   local candidate
   local resolved
-  local expanded=()
+  local expanded
 
   shopt -s nullglob
-  for candidate in ${candidates[@]+"${candidates[@]}"}; do
+  for candidate in "${candidates[@]}"; do
     expanded=("${project_root_abs}"/${candidate})
-    for resolved in ${expanded[@]+"${expanded[@]}"}; do
+    for resolved in "${expanded[@]}"; do
       if [[ -f "${resolved}" ]]; then
         printf '%s\n' "${resolved}"
         shopt -u nullglob
@@ -197,7 +197,6 @@ else
   SRC_2W="$(
     resolve_auto_source "${PROJECT_ROOT_ABS}" \
       "2w-brainstorm.md" \
-      "docs/2w-brainstorm.md" \
       "docs/planning/2w-brainstorm.md" \
       "problems/*/2w-brainstorm.md"
   )"
@@ -213,9 +212,6 @@ else
       "case-study.md" \
       "case-studies.md" \
       "eda-kafka-case-studies.md" \
-      "docs/2w-case-study.md" \
-      "docs/case-studies.md" \
-      "docs/eda-kafka-case-studies.md" \
       "docs/planning/2w-case-study.md" \
       "docs/planning/case-studies.md" \
       "docs/planning/eda-kafka-case-studies.md" \
@@ -232,90 +228,19 @@ else
     resolve_auto_source "${PROJECT_ROOT_ABS}" \
       "how-diagram.md" \
       "1h-agile-phase.md" \
-      "docs/how-diagram.md" \
-      "docs/1h-agile-phase.md" \
       "docs/planning/how-diagram.md" \
       "docs/planning/1h-agile-phase.md" \
       "problems/*/how-diagram.md"
   )"
 fi
 
-DEST_2W="${TARGET_LOOP_DIR}/01-define-2w.md"
-DEST_CASE="${TARGET_LOOP_DIR}/02-define-2w-case-study.md"
-DEST_PHASE="${TARGET_LOOP_DIR}/04-design-phase.md"
-TARGET_SPRINT_DIR="${TARGET_LOOP_DIR}/sprint"
-DEST_SPRINT_PLAN="${TARGET_SPRINT_DIR}/01-sprint-plan.md"
-DEST_SPRINT_STATUS="${TARGET_SPRINT_DIR}/02-sprint-status.md"
-DEST_SPRINT_RETRO="${TARGET_SPRINT_DIR}/04-sprint-retrospective.md"
+DEST_2W="${TARGET_LOOP_DIR}/01-02-define-2w.md"
+DEST_CASE="${TARGET_LOOP_DIR}/01-03-define-2w-case-study.md"
+DEST_PHASE="${TARGET_LOOP_DIR}/02-design-phase.md"
 
-SRC_SPRINT_PLAN="$(
-  resolve_auto_source "${PROJECT_ROOT_ABS}" \
-    ".agile/sprints/sprint-${LOOP}/plan.md" \
-    "sprint-plan.md" \
-    "docs/sprint-plan.md" \
-    "docs/planning/sprint-plan.md"
-)"
-SRC_SPRINT_STATUS="$(
-  resolve_auto_source "${PROJECT_ROOT_ABS}" \
-    ".agile/sprints/sprint-${LOOP}/status.md" \
-    "sprint-status.md" \
-    "docs/sprint-status.md" \
-    "docs/planning/sprint-status.md"
-)"
-SRC_SPRINT_RETRO="$(
-  resolve_auto_source "${PROJECT_ROOT_ABS}" \
-    ".agile/sprints/sprint-${LOOP}/sprint-retrospective.md" \
-    ".agile/sprints/sprint-${LOOP}/retrospective.md" \
-    "sprint-retrospective.md" \
-    "docs/sprint-retrospective.md" \
-    "docs/planning/sprint-retrospective.md"
-)"
-
-labels=(
-  "2W Brainstorm"
-  "Case Study"
-  "How Diagram"
-  "Sprint Plan"
-  "Sprint Status"
-  "Sprint Retrospective"
-)
-srcs=(
-  "${SRC_2W}"
-  "${SRC_CASE}"
-  "${SRC_HOW}"
-  "${SRC_SPRINT_PLAN}"
-  "${SRC_SPRINT_STATUS}"
-  "${SRC_SPRINT_RETRO}"
-)
-dests=(
-  "${DEST_2W}"
-  "${DEST_CASE}"
-  "${DEST_PHASE}"
-  "${DEST_SPRINT_PLAN}"
-  "${DEST_SPRINT_STATUS}"
-  "${DEST_SPRINT_RETRO}"
-)
-
-US_RETRO_SOURCES=()
-US_RETRO_GLOB=("${PROJECT_ROOT_ABS}/.agile/sprints/sprint-${LOOP}"/us-*-retrospective.md)
-for us_src in ${US_RETRO_GLOB[@]+"${US_RETRO_GLOB[@]}"}; do
-  if [[ -f "${us_src}" ]]; then
-    US_RETRO_SOURCES+=("${us_src}")
-  fi
-done
-for us_src in ${US_RETRO_SOURCES[@]+"${US_RETRO_SOURCES[@]}"}; do
-  us_file="$(basename "${us_src}")"
-  us_id="$(printf '%s\n' "${us_file}" | sed -n 's/^us-\([0-9][0-9]*\.[0-9][0-9]*\)-retrospective\.md$/\1/p')"
-  if [[ -n "${us_id}" ]]; then
-    us_dest="${TARGET_SPRINT_DIR}/03-us-${us_id}-retrospective.md"
-    labels+=("US Retrospective ${us_id}")
-  else
-    us_dest="${TARGET_SPRINT_DIR}/03-${us_file}"
-    labels+=("US Retrospective ${us_file}")
-  fi
-  srcs+=("${us_src}")
-  dests+=("${us_dest}")
-done
+labels=("2W Brainstorm" "Case Study" "How Diagram")
+srcs=("${SRC_2W}" "${SRC_CASE}" "${SRC_HOW}")
+dests=("${DEST_2W}" "${DEST_CASE}" "${DEST_PHASE}")
 
 statuses=()
 notes=()

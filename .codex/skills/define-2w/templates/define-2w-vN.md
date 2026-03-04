@@ -8,7 +8,8 @@
 - 미확정/리스크:
 
 ## Phase 연속성 게이트
-- 이전 04-design-phase 경로:
+- 이전 design-phase 경로(02 또는 legacy 04):
+- 브리핑 결과 파일: `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md` (이전 phase 존재 시)
 - 진행상황 요약(완료/진행/대기):
 - 감지된 다음 Phase:
 - 선택 전 고정 브리핑 1줄(진행상황):
@@ -64,7 +65,7 @@
 - 사용자 선택: 진행 | 생략
 
 ## 사례 연구 결과 연결 (실행 시)
-- 결과 파일: `.agile/loops/loop-vN/02-define-2w-case-study.md`
+- 결과 파일: `.agile/loops/loop-vN/01-03-define-2w-case-study.md`
 - 2W 반영 요약(최대 3줄):
 
 ## 안티패턴/베스트 프랙티스 연구 판단 게이트
@@ -73,7 +74,7 @@
 - 사용자 선택: 진행 | 생략
 
 ## 안티패턴/베스트 프랙티스 연구 결과 연결 (실행 시)
-- 결과 파일: `.agile/loops/loop-vN/03-define-2w-patterns.md`
+- 결과 파일: `.agile/loops/loop-vN/01-04-define-2w-patterns.md`
 - 2W 반영 요약(최대 3줄):
 
 ## 결정
