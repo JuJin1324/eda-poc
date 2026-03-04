@@ -18,6 +18,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 
 ## 이 스킬이 메인으로 담당하는 것
 - 구현 대상 기능 목록 정리
+- US별 구현 Step 작성
 - 구현 범위/경계 명확화
 - Sequence 다이어그램 작성 (필수)
 - Flowchart 작성
@@ -27,7 +28,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 
 ## 입력
 - `.agile/loops/loop-vN/02-design-phase.md`
-- `.agile/loops/loop-vN/sprint/01-sprint-plan.md`
+- `.agile/loops/loop-vN/sprint/02-sprint-status.md` (있으면 진행 상태 우선 참조)
 - `.agile/context/tech-stack.md` (있다면 우선 사용)
 
 ## 출력물
@@ -70,6 +71,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 이번 스프린트에서 구현할 US를 1~2개 선택
 - US별 기능 목록을 정리
 - US별 설계 범위를 명시
+- US별 구현 Step을 2~5개로 작성
 
 ### 4단계. 구현 경계 정의
 - In Scope / Out of Scope 확정

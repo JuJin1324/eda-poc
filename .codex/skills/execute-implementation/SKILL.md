@@ -23,7 +23,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 
 ## 입력
 - `.agile/loops/loop-vN/03-design-implementation.md`
-- `.agile/loops/loop-vN/sprint/01-sprint-plan.md`
+- `.agile/loops/loop-vN/sprint/02-sprint-status.md`
 
 ## 출력물
 - 코드 변경사항
@@ -82,4 +82,4 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 코드-요구사항 매핑 및 구현 의도 설명 완료
 
 ## 다음 단계
-- 필요 시 `/plan-sprint` 상태 업데이트
+- 필요 시 `/monitor-sprint`로 상태 문서 업데이트

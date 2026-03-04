@@ -1,327 +1,128 @@
 ---
 name: monitor-sprint
-description: "현재 Sprint의 진행 상황을 시각화하여 보여줍니다. 완료/진행 중/대기 중 태스크와 US 일정 상태(Ahead/On-track/Delayed)를 집계합니다."
+description: "Sprint 상태 문서를 생성/갱신하고, 고정 대시보드 포맷으로 진행률/리스크를 시각화하며, 종료 시 회고 문서를 생성하는 운영 스킬."
 ---
 
-# 스프린트 모니터링
+# Monitor Sprint
 
 ## 목적
+`02-design-phase.md`를 기준으로 Sprint 상태를 운영한다.
 
-현재 Sprint의 진행 상황을 명확히 시각화하여, 어디까지 진행했는지 한눈에 파악할 수 있도록 돕습니다.
+핵심 원칙:
+- 상태 문서(`02-sprint-status.md`)가 Sprint 진행의 단일 소스다.
+- 상태 문서가 없으면 monitor-sprint가 자동으로 초기 생성한다.
+- 구현 Step 상세는 `design-implementation` 책임이며, monitor-sprint는 상태/리스크/회고 운영에 집중한다.
+- 상태 문서 생성/보정/존재 여부는 내부 처리하며, 사용자 응답에는 현재 Sprint 상태만 표시한다. (복구 불가 오류는 예외)
 
-**해결하는 문제:**
-- ❌ 어디까지 진행했는지 불명확
-- ❌ 남은 작업량 파악 어려움
-- ❌ 진행 상황 시각화 도구 없음
+## 이 스킬이 메인으로 담당하는 것
+- Sprint 상태 문서 초기 생성 (bootstrap)
+- Sprint 상태 시각화 (US 상태 + 일정 상태)
+- 리스크/블로커 추적
+- US 회고 / Sprint 회고 문서 생성
 
-**제공하는 가치:**
-- ✅ 진행률 시각화 → 명확한 현황 파악
-- ✅ 태스크 상태 집계 → 다음 할 일 명확
-- ✅ 남은 기간 확인 → 시간 관리
-- ✅ US 일정 상태 집계 → 선행/정시/지연 판단
+## 입력
+- `.agile/loops/loop-vN/02-design-phase.md`
+- `.agile/loops/loop-vN/sprint/02-sprint-status.md` (선택: 없으면 생성)
 
----
+## 출력물
+- `.agile/loops/loop-vN/sprint/02-sprint-status.md`
+- `.agile/loops/loop-vN/sprint/03-us-N.M-retrospective.md` (US 완료 시)
+- `.agile/loops/loop-vN/sprint/04-sprint-retrospective.md` (Sprint 종료 시)
 
-## 파일 구조
+템플릿:
+- `templates/sprint-status.md`
+- `templates/us-retrospective.md`
+- `templates/sprint-retrospective-vN.md`
 
-```
-.agile/
-└── loops/
-    └── loop-vN/
-        └── sprint/
-            └── 01-sprint-plan.md     # Sprint 계획 (진행 상황 포함)
-```
-
-## 참고 문서
-
+참고 문서:
 - `references/experience.md`
-  - 진행률/일정 상태 해석과 blocker 관리에서 유효했던 패턴을 참고할 때
-
----
+  - 상태 초기화/리스크 추적/회고 생성 패턴을 재사용할 때
 
 ## 작동 방식
 
-### Step 1: 현재 Sprint 확인
-
+### 1단계. 최신 loop 확인
 - `.agile/loops/`에서 최신 `loop-vN` 확인
-- 해당 loop의 `sprint/01-sprint-plan.md` 존재 확인
-- 없으면 → `/plan-sprint` 권장
-
-### Step 2: Sprint Plan 파일 파싱
-
-**파일 읽기:** `.agile/loops/loop-vN/sprint/01-sprint-plan.md`
-
-**태스크 상태 집계:**
-- `[x]` → Completed
-- `[ ]` (+ "Status: In Progress" 또는 "🔄") → In Progress
-- `[ ]` (기본) → To Do
-
-**진행률 계산:**
-```
-진행률 = (Completed / Total) * 100
-```
-
-**기간 확인:**
-- Sprint 시작일/종료일 파싱
-- 남은 기간 계산
-
-**US 일정 상태 집계:**
-- 각 US의 `완료 목표일` 파싱 (`**완료 목표일:** YYYY-MM-DD`)
-- 오늘 날짜(로컬 기준)와 비교해 상태 분류
-- 상태별 개수 집계 (Ahead / On-track / Delayed)
-
-### Step 3: 시각화 출력
-
-```
-📊 Sprint N 진행 상황
-
-🎯 Goal: [Sprint 목표]
-📅 기간: {시작일} ~ {종료일}
-⏰ 남은 기간: X일
-🗓️ US 일정 상태: Ahead 1 | On-track 2 | Delayed 1
-
-📈 Progress: ████████░░ 60% (3/5)
-
-✅ Completed (2)
-  - Stock Domain 모델 구현
-  - Pessimistic Lock Service 구현
-
-🔄 In Progress (1)
-  - Optimistic Lock Service 구현
-
-📋 To Do (2)
-  - REST API 구현
-  - 통합 테스트 작성
-
----
-
-💡 Tip: 01-sprint-plan.md 파일을 직접 수정해서 진행 상황을 업데이트하세요!
-     완료한 태스크는 [ ]를 [x]로 변경하면 됩니다.
-```
-
-### US 일정 상태 (신규)
-
-US 구조와 `완료 목표일`이 있으면 아래를 추가 출력:
-
-```markdown
-🗓️ US Schedule Status (기준일: YYYY-MM-DD)
-- Ahead: 1
-- On-track: 2
-- Delayed: 1
-
-| US | 완료 목표일 | 상태 |
-|----|----|----|
-| US-3.1 | 2026-02-24 | Ahead |
-| US-3.2 | 2026-02-25 | On-track |
-| US-3.3 | 2026-02-23 | Delayed |
-```
-
----
-
-## 태스크 상태 파싱 규칙
-
-### 1. Completed (완료)
-```markdown
-- [x] 태스크 이름
-```
-
-### 2. In Progress (진행 중)
-
-**방법 1:** 명시적 표시
-```markdown
-- [ ] 태스크 이름
-  - Status: In Progress
-```
-
-**방법 2:** 이모지 사용
-```markdown
-- [ ] 🔄 태스크 이름
-```
-
-**방법 3:** 섹션 기반
-```markdown
-### 🔄 In Progress
-- [ ] 태스크 이름
-```
-
-### 3. To Do (대기 중)
-```markdown
-- [ ] 태스크 이름
-```
-
----
-
-## US 일정 상태 판정 규칙
-
-### 입력 규칙
-```markdown
-### US-{N}.{M}: {목표}
-**완료 목표일:** {YYYY-MM-DD}
-```
-
-### 판정 기준 (기준일 = `/monitor-sprint` 실행일)
-- `Ahead`: 해당 US가 완료(`US 섹션 내 체크리스트 모두 [x]` 또는 `US 제목에 ✅`)되었고 완료 목표일 이전에 끝난 상태
-- `On-track`: 완료 목표일이 오늘 이후이면서 US가 미완료인 상태, 또는 완료 목표일 당일에 완료된 상태
-- `Delayed`: 완료 목표일이 지났는데 US가 미완료인 상태
-
-### 예외 처리
-- 완료 목표일 누락 시 해당 US는 일정 집계에서 제외하고 `Unknown`으로 표시
-- 날짜 형식 오류 시 해당 US는 `Unknown`으로 표시하고 파싱 경고를 함께 출력
-
----
-
-## 진행률 시각화 포맷
-
-### Progress Bar 생성
-
-**10칸 기준:**
-```
-0-9%   : ░░░░░░░░░░  0%
-10-19% : █░░░░░░░░░ 10%
-20-29% : ██░░░░░░░░ 20%
-...
-90-99% : █████████░ 90%
-100%   : ██████████ 100%
-```
-
-### 완료율 계산
-
-```
-완료율 = (완료한 태스크 수 / 전체 태스크 수) * 100
-```
-
-**예시:**
-- 전체: 10개
-- 완료: 6개
-- 진행 중: 2개
-- 대기: 2개
-- **완료율: 60%**
-
----
-
-## 추가 정보 제공
-
-### US별 진행 상황 (선택)
-
-Sprint Plan에 US 구조가 있는 경우:
-
-```
-📊 Sprint 0 진행 상황
-
-🎯 Goal: 플랫폼 엔지니어링 + 아키텍처 설계
-
-📈 Overall Progress: ██████████ 100% (15/15)
-
----
-
-### Sprint 시작 ✅ (100%)
-- ✅ ADR-001: 4가지 방법 선택 근거
-- ✅ ADR-002: PoC 범위 축소 근거
-- ✅ ADR-003: 시각화 우선 워크플로우
-
-### US-0.1: 인프라 환경 구축 ✅ (100%)
-- ✅ 인프라 다이어그램 완성
-- ✅ ADR-004 완성
-- ✅ Docker Compose 구현
-
-### US-0.2: 프로젝트 스캐폴딩 ✅ (100%)
-- ✅ 애플리케이션 구조 다이어그램 완성
-- ✅ Spring Boot 프로젝트 생성
-
-### US-0.3: 문서화 ✅ (100%)
-- ✅ README 작성
-- ✅ C4 Diagram 작성
-```
-
-### Blockers 표시
-
-01-sprint-plan.md에 Blockers 섹션이 있으면:
-
-```
-⚠️ Blockers (1)
-- Docker 컨테이너 실행 오류 (MySQL 포트 충돌)
-```
-
----
-
-## 사용자 가이드
-
-### 진행 상황 업데이트 방법
-
-**1. 01-sprint-plan.md 파일 직접 수정**
-```markdown
-# Sprint 1: DB Lock 구현
-
-## Tasks
-
-### ✅ Completed
-- [x] Stock Domain 모델 구현 (2026-01-06)
-- [x] Pessimistic Lock Service 구현 (2026-01-07)
-
-### 🔄 In Progress
-- [ ] Optimistic Lock Service 구현
-  - Status: 50% (Version 컬럼 추가 완료, Retry 로직 작성 중)
-
-### 📋 To Do
-- [ ] REST API 구현
-- [ ] 통합 테스트 작성
-```
-
-**2. `/monitor-sprint` 실행**
-- AI가 파일을 파싱하여 현황 시각화
-
----
-
-## 중요 원칙
-
-### 1. 사용자 주도권 유지
-
-- ✅ AI는 읽기만 함 (01-sprint-plan.md 수정 안 함)
-- ✅ 사용자가 직접 [ ]를 [x]로 변경
-- ✅ AI는 시각화만 제공
-
-### 2. 실시간 반영
-
-- 01-sprint-plan.md를 수정하면 즉시 `/monitor-sprint`에 반영
-- 별도 동기화 작업 불필요
-
----
-
-## ✅ AI가 해야 할 것
-
-- 01-sprint-plan.md 파일 읽기 및 파싱
-- 태스크 상태 집계 (Completed, In Progress, To Do)
-- 진행률 계산 및 Progress Bar 생성
-- 남은 기간 계산
-- US 완료 목표일 파싱 및 일정 상태 분류 (Ahead/On-track/Delayed)
-- US 일정 상태 집계 출력 (필요 시 Unknown 포함)
-- 시각화된 현황 출력
-
-## ❌ AI가 하지 말아야 할 것
-
-- 01-sprint-plan.md 파일 수정
-- 사용자 대신 태스크 상태 변경
-- 임의로 태스크 추가/삭제
-- 진행 상황 평가 또는 조언 (순수하게 시각화만)
-
----
-
-## 다음 스텝
-
-진행 상황 확인 후:
-
-1. **01-sprint-plan.md 파일 수정** - 완료한 태스크 체크
-2. **`/monitor-sprint`** - 다시 현황 확인
-3. **`/plan-sprint`** - Sprint 완료/회고 및 다음 라운드 결정
-
----
-
-**버전:** 3.1.0
-**최종 업데이트:** 2026-02-25
-**변경 사항:**
-- **v3.1.0:** US 일정 추적 추가
-  - `01-sprint-plan.md`의 `완료 목표일` 기반으로 US 상태(Ahead/On-track/Delayed) 자동 분류
-  - 상태별 집계와 US별 일정 상태 표 출력 포맷 추가
-  - 목표일 누락/형식 오류 시 `Unknown` 처리 규칙 추가
-- **Breaking:** Iteration 중간 계층 제거, Sprint > US 2단계 구조로 단순화
-- US별 진행 상황 표시로 변경
+- `02-design-phase.md` 존재 확인
+
+### 2단계. Sprint 상태 문서 bootstrap
+- `sprint/02-sprint-status.md`가 없으면 자동 생성
+- 생성 규칙:
+  - Sprint Goal: `02-design-phase.md`의 Sprint Goal 사용
+  - US 목록: `US 계획` 표에서 `이번 스프린트 포함(Y)` 항목만 추출
+  - 초기 상태: 모든 US를 `Todo`로 시작
+  - 진행률: `0% (완료 0/N US)`
+  - Risks: design-phase의 미확정/리스크를 초기 리스크로 반영
+- 이 단계의 처리 여부(없어서 생성했는지 등)는 사용자 응답에 노출하지 않는다.
+
+### 3단계. 상태 시각화
+- monitor-sprint 실행 응답은 아래 4개 섹션을 항상 포함한다:
+  1. Sprint Dashboard
+  2. US Board
+  3. Risk Radar
+  4. Skill Routing
+- 사용자 응답은 상태 대시보드에 집중하며, 파일 생성/존재/갱신 같은 내부 메타데이터는 포함하지 않는다.
+
+#### 3-1. Sprint Dashboard
+- 출력 항목:
+  - `loop-vN`, 기준일, Sprint Goal, 현재 상태(Ahead/On-track/Delayed), 남은 기간
+  - 10칸 진행률 바 + 퍼센트 + 완료 US 수
+  - US 상태 집계(`Todo / In-Progress / Done`)
+- 진행률 계산:
+  - 우선 `전체 진행률` 값 사용
+  - 없으면 `(Done US 수 / 전체 US 수) * 100`
+
+#### 3-2. US Board
+- `US Progress` 표를 기준으로 아래 열을 표 형태로 출력한다:
+  - US ID
+  - 상태
+  - 일정 상태
+  - 다음 권장 스킬
+  - 다음 액션
+- 일정 상태 규칙:
+  - US별 `완료 목표일`이 있으면 `Ahead/On-track/Delayed` 계산
+  - 완료 목표일이 없으면 Sprint의 `현재 상태`를 기본값으로 사용
+
+#### 3-3. Risk Radar
+- `Risks / Blockers`를 리스크/블로커 개수와 함께 표시한다.
+- 블로커가 1개 이상이면 최상단에 경고를 표시한다.
+
+#### 3-4. Skill Routing (현재 스킬 체계 기준)
+- 상태와 산출물 존재 여부를 기준으로 다음 스킬을 추천한다:
+  - `Todo` US 존재: `/design-implementation`
+  - `In-Progress` US 존재: `/execute-implementation`
+  - `04-execute-implementation-us-N.M.md`는 있고 `05-design-test-us-N.M.md`가 없으면: `/design-test`
+  - `05-design-test-us-N.M.md`는 있고 `06-execute-test-us-N.M.md`가 없으면: `/execute-test`
+  - 모든 US `Done`: US/Sprint 회고 생성 후 `/define-2w` 또는 `/design-phase`
+
+### 4단계. 상태 갱신 규칙
+- US 착수: `Todo -> In-Progress`
+- US 완료: `In-Progress -> Done`
+- 리스크/블로커는 `02-sprint-status.md`의 `Risks / Blockers` 섹션에서만 관리
+
+### 5단계. 회고 문서 생성
+- US가 완료되면 `03-us-N.M-retrospective.md` 생성
+- Sprint 종료 시 `04-sprint-retrospective.md` 생성
+- Sprint 회고에는 반드시 아래 5개 포함:
+  1. 검증된 가정(True)
+  2. 반박된 가정(False)
+  3. 새로 생긴 Unknown
+  4. 유지할 전략(Keep)
+  5. 폐기할 전략(Drop)
+
+## 안티패턴
+- 상태 문서 없이 진행 상황을 구두/채팅으로만 관리
+- 대시보드 없이 한두 줄 텍스트 요약만 출력
+- 내부 처리 정보(bootstrap 여부, 파일 생성 여부)를 사용자 상태 리포트에 노출
+- 상태 문서와 리스크 기록을 분리해 단일 소스가 깨짐
+- 회고를 생략하고 다음 루프로 바로 이동
+
+## 완료 조건
+- `02-sprint-status.md`가 존재하고 최신 상태 반영 완료
+- 대시보드 4섹션(Sprint Dashboard/US Board/Risk Radar/Skill Routing) 출력 완료
+- 완료된 US마다 `03-us-N.M-retrospective.md` 생성 완료
+- Sprint 종료 시 `04-sprint-retrospective.md` 생성 완료
+- 다음 루프 진입 경로(`define-2w` 또는 `design-phase` 또는 종료) 확정
+
+## 다음 단계
+- 구현 설계/실행 중: `/design-implementation`, `/execute-implementation`, `/design-test`, `/execute-test`
+- Sprint 종료 시: `/define-2w` 또는 `/design-phase`

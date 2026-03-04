@@ -2,21 +2,22 @@
 
 ## 한눈에 결론
 - 현재 상태: Ahead | On-track | Delayed
-- 전체 진행률:
+- 전체 진행률: 0% (완료 0/{US_COUNT} US)
+- US 상태 분포: Todo 0 | In-Progress 0 | Done 0
 - 핵심 이슈:
 
 ---
 
 ## 1) Snapshot
-- 기준일:
+- 기준일: YYYY-MM-DD
 - Sprint Goal:
 - 남은 기간:
 
 ## 2) US Progress
-| US | 상태 | 근거 | 다음 액션 |
-| --- | --- | --- | --- |
-| US-{N}.1 | Todo/In-Progress/Done |  |  |
-| US-{N}.2 | Todo/In-Progress/Done |  |  |
+| US | 상태 | 일정 상태 | 다음 스킬 | 근거 | 다음 액션 |
+| --- | --- | --- | --- | --- | --- |
+| US-{N}.1 | Todo | On-track | /design-implementation |  |  |
+| US-{N}.2 | Todo | On-track | /design-implementation |  |  |
 
 ## 3) Risks / Blockers
 - 리스크 1:

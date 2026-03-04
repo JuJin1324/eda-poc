@@ -1,4 +1,4 @@
 interface:
   display_name: "Monitor Sprint"
-  short_description: "현재 Sprint 진행률과 태스크 상태를 시각화"
-  default_prompt: "Use $monitor-sprint to parse the current sprint plan and report completion, in-progress work, and remaining tasks."
+  short_description: "Sprint 상태를 대시보드(진행률 바/US 보드/리스크/스킬 라우팅)로 시각화"
+  default_prompt: "Use $monitor-sprint to parse the latest loop sprint status document (silently bootstrap it from 02-design-phase.md if missing). Always return only: (1) Sprint Dashboard with a 10-cell progress bar, (2) US Board table with status/schedule/next skill/next action, (3) Risk Radar, and (4) Skill Routing recommendations across /design-implementation, /execute-implementation, /design-test, /execute-test, and retrospective transition. Do not mention file existence/creation/update metadata unless the user explicitly asks or there is an unrecoverable error."

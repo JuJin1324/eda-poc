@@ -49,7 +49,8 @@
 - 스프린트 목표(Sprint Goal):
 - 완료 기준(Definition of Done):
 - 선행 의존사항:
-- Step 작성 위치: `/plan-sprint` Plan 단계
+- 상태 문서 작성/갱신 위치: `/monitor-sprint` (`02-sprint-status.md`)
+- 구현 Step 작성 위치: `/design-implementation` 단계
 
 ## 6) 다음 액션
 1. 다음으로 바로 실행할 일 1:

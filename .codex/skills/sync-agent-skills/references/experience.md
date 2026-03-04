@@ -42,7 +42,7 @@ Untracked files:
 	.codex/skills/execute-test/references/experience.md
 	.codex/skills/manage-experience/
 	.codex/skills/monitor-sprint/references/
-	.codex/skills/plan-sprint/references/experience.md
+	.codex/skills/monitor-sprint/templates/
 	.codex/skills/record-adr/references/
 
 nothing added to commit but untracked files present (use "git add" to track)와 를 필수 점검

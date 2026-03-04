@@ -5,13 +5,12 @@
 ## Active Skills
 
 - `define-2w`: 4개 필수 질문으로 2W를 라운드(vN) 단위로 빠르게 정의
-- `design-phase`: 2W vN 기반으로 1페이즈 분량의 Phase+US/지표/완료조건을 설계 (Step은 Sprint에서 작성)
-- `plan-sprint`: Sprint 계획/진행/완료/US 완료를 통합 운영하고 다음 define-2w/design-phase 라운드로 반영
+- `design-phase`: 2W vN 기반으로 1페이즈 분량의 Phase+US/지표/완료조건을 설계 (구현 Step은 design-implementation에서 작성)
 - `design-implementation`: 구현 설계 전용 스킬 (Sequence/Flowchart 중심 + C4 Container 선택)
 - `execute-implementation`: 구현 실행 전용 스킬 (코드 스타일 컨벤션 + 테스트/검증)
 - `design-test`: 테스트 구현 설계 전용 스킬 (케이스/우선순위/전략/환경)
 - `execute-test`: 테스트 구현 실행 전용 스킬 (실행/실패분석/재검증)
-- `monitor-sprint`: Sprint 진행 현황 집계
+- `monitor-sprint`: Sprint 상태 문서 생성/업데이트 가이드 + 진행 현황 집계
 - `record-adr`: Architecture Decision Record 생성/관리
 - `sync-agent-skills`: 다른 에이전트 스킬을 Codex 형식으로 동기화
 - `manage-experience`: 스킬별 경험 문서 seed/log/promote 운영

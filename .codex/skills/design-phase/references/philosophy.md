@@ -25,7 +25,8 @@ flowchart LR
 ## 운영 원칙
 - 먼저 Phase와 US를 확정한다.
 - Scope 우선: In/Out/Unknown을 먼저 확정한다.
-- design-phase에서는 US까지 설계하고, Step은 Sprint Plan에서 작성한다.
+- design-phase에서는 US까지 설계하고, Sprint 상태(일정/리스크/진행률)는 Monitor Sprint에서 관리한다.
+- 구현 Step 상세는 design-implementation에서 작성한다.
 - Metric 최소화: Leading 1개, Outcome 1개만 둔다.
 
 ## 완료의 의미
