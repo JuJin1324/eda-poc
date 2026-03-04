@@ -70,3 +70,4 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 
 ## 다음 단계
 - 필요 시 `/execute-implementation` 또는 `/design-implementation`으로 피드백
+- 상태/리스크 변화가 있으면 `/monitor-sprint`로 `02-sprint-status.md` 업데이트

@@ -5,16 +5,26 @@
 ## Active Skills
 
 - `define-2w`: 4개 필수 질문으로 2W를 라운드(vN) 단위로 빠르게 정의
-- `design-phase`: 2W vN 기반으로 1페이즈 분량의 Phase+US/지표/완료조건을 설계 (구현 Step은 design-implementation에서 작성)
+- `design-phase`: 2W vN 기반으로 1페이즈 분량의 Phase+US/지표/완료조건을 설계 (사례/패턴 연구 산출물 선택 반영, 구현 Step은 design-implementation에서 작성)
 - `design-implementation`: 구현 설계 전용 스킬 (Sequence/Flowchart 중심 + C4 Container 선택)
 - `execute-implementation`: 구현 실행 전용 스킬 (코드 스타일 컨벤션 + 테스트/검증)
 - `design-test`: 테스트 구현 설계 전용 스킬 (케이스/우선순위/전략/환경)
-- `execute-test`: 테스트 구현 실행 전용 스킬 (실행/실패분석/재검증)
-- `monitor-sprint`: Sprint 상태 문서 생성/업데이트 가이드 + 진행 현황 집계
-- `record-adr`: Architecture Decision Record 생성/관리
+- `execute-test`: 테스트 구현 실행 전용 스킬 (실행/실패분석/재검증, 필요 시 monitor-sprint 상태 갱신)
+- `monitor-sprint`: Sprint 상태 단일 소스(`02-sprint-status.md`) 생성/업데이트 + 진행 현황 집계/라우팅/회고
+- `record-adr`: Architecture Decision Record 생성/관리 (`02-design-phase.md`, `03-design-implementation.md` 등과 연계)
 - `sync-agent-skills`: 다른 에이전트 스킬을 Codex 형식으로 동기화
 - `manage-experience`: 스킬별 경험 문서 seed/log/promote 운영
 - `migrate-legacy-artifacts`: 다양한 프로젝트의 구버전 산출물을 자동 탐색해 신버전 `.agile/loops/loop-vN/` 입력 경로로 마이그레이션
+
+## 권장 워크플로우 (현재)
+
+1. `define-2w`: 2W 확정 + 필요 시 사례/패턴 연구 산출물 생성
+2. `design-phase`: `01-02` + 선택 입력(`01-03`, `01-04`)으로 Phase/US/지표 설계
+3. `monitor-sprint`: `02-sprint-status.md` 초기화(없으면 bootstrap) 및 대시보드 확인
+4. `design-implementation` -> `execute-implementation`
+5. `design-test` -> `execute-test`
+6. `monitor-sprint`: 상태/리스크 갱신 및 회고 생성
+7. Sprint 종료 후 `define-2w` 또는 `design-phase`로 다음 루프 진입
 
 ## Legacy Skills
 

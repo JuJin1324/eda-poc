@@ -68,7 +68,7 @@ slug: 제목을 소문자 kebab-case로 변환 (예: "at-least-once-idempotency"
 
 ```
 ✅ ADR-{N} 생성 완료: docs/adr/ADR-{N:03d}-{slug}.md
-→ how-diagram.md 또는 관련 문서에 참조를 추가하시겠습니까?
+→ `02-design-phase.md`, `03-design-implementation.md` 또는 관련 문서에 참조를 추가하시겠습니까?
 ```
 
 ---
