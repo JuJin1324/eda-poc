@@ -6,12 +6,13 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 # Execute Test
 
 ## 목적
-`.agile/loops/loop-vN/05-design-test-us-N.M.md`를 기반으로 테스트를 구현/실행하고 결과를 검증한다.
+`.agile/loops/loop-vN/design-test-us-N.M.md`를 기반으로 테스트를 구현/실행하고 결과를 검증한다.
 
 핵심 원칙:
 - P0부터 실행해 리스크를 먼저 낮춘다.
 - 실패는 증거와 함께 기록한다.
 - 결함은 구현/설계 문서로 되돌려 닫힌 루프를 만든다.
+- 단계 게이트/라우팅/산출 디렉터리 계약은 `docs/skill-ops/framework.md`를 우선 준수한다.
 
 ## 이 스킬이 메인으로 담당하는 것
 - 테스트 코드 구현
@@ -20,18 +21,19 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 - 재검증 및 상태 갱신
 
 ## 입력
-- `.agile/loops/loop-vN/05-design-test-us-N.M.md`
-- `.agile/loops/loop-vN/04-execute-implementation-us-N.M.md`
+- `.agile/loops/loop-vN/design-test-us-N.M.md`
+- `.agile/loops/loop-vN/execute-implementation-us-N.M.md`
 
 ## 출력물
 - 테스트 코드 변경사항
-- `.agile/loops/loop-vN/06-execute-test-us-N.M.md`
+- `.agile/loops/loop-vN/execute-test-us-N.M.md`
 
 템플릿:
 - `templates/execute-test-us-vN.md`
 
 참고 문서:
-- `references/philosophy.md`
+- `docs/skill-ops/framework.md`
+  - 본 스킬의 단계 진입/전환 조건과 산출 디렉터리 계약을 확인할 때
 - `references/experience.md`
   - P0 우선 실행, 실패 재현 기록, 결함 환류 패턴을 참고할 때
 
@@ -63,11 +65,10 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 - 결함을 구현/설계로 피드백하지 않음
 
 ## 완료 조건
-- `.agile/loops/loop-vN/06-execute-test-us-N.M.md` 작성 완료
+- `.agile/loops/loop-vN/execute-test-us-N.M.md` 작성 완료
 - P0 실행 결과 기록 완료
 - 실패 항목 원인/재현/조치 기록 완료
 - 재검증 결과 반영 완료
 
 ## 다음 단계
-- 필요 시 `/execute-implementation` 또는 `/design-implementation`으로 피드백
-- 상태/리스크 변화가 있으면 `/monitor-sprint`로 `02-sprint-status.md` 업데이트
+- 다음 적용 스킬은 `docs/skill-ops/framework-applied-skills.md`의 `단계별 적용 순서`를 참조해 결정한다.

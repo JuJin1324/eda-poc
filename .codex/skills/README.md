@@ -10,21 +10,23 @@
 - `execute-implementation`: 구현 실행 전용 스킬 (코드 스타일 컨벤션 + 테스트/검증)
 - `design-test`: 테스트 구현 설계 전용 스킬 (케이스/우선순위/전략/환경)
 - `execute-test`: 테스트 구현 실행 전용 스킬 (실행/실패분석/재검증, 필요 시 monitor-sprint 상태 갱신)
-- `monitor-sprint`: Sprint 상태 단일 소스(`02-sprint-status.md`) 생성/업데이트 + 진행 현황 집계/라우팅/회고
-- `record-adr`: Architecture Decision Record 생성/관리 (`02-design-phase.md`, `03-design-implementation.md` 등과 연계)
+- `monitor-sprint`: Sprint 상태 문서 생성/업데이트 + 진행 현황 집계/재평가
+- `review-sprint`: Sprint 회고/학습 정리 + 다음 스프린트 시작/종료 결정
+- `record-adr`: Architecture Decision Record 생성/관리 (`design-phase.md`, `design-implementation.md` 등과 연계)
 - `sync-agent-skills`: 다른 에이전트 스킬을 Codex 형식으로 동기화
 - `manage-experience`: 스킬별 경험 문서 seed/log/promote 운영
-- `migrate-legacy-artifacts`: 다양한 프로젝트의 구버전 산출물을 자동 탐색해 신버전 `.agile/loops/loop-vN/` 입력 경로로 마이그레이션
+- `migrate-legacy-artifacts`: 다양한 프로젝트의 구버전 산출물을 자동 탐색해 신버전 파이프라인 입력 경로로 마이그레이션
 
 ## 권장 워크플로우 (현재)
 
 1. `define-2w`: 2W 확정 + 필요 시 사례/패턴 연구 산출물 생성
-2. `design-phase`: `01-02` + 선택 입력(`01-03`, `01-04`)으로 Phase/US/지표 설계
-3. `monitor-sprint`: `02-sprint-status.md` 초기화(없으면 bootstrap) 및 대시보드 확인
+2. `design-phase`: `1-direction/` 산출물로 Phase/US/지표 설계
+3. `monitor-sprint`: `2-delivery/` 상태 문서 초기화(없으면 bootstrap) 및 대시보드 확인
 4. `design-implementation` -> `execute-implementation`
 5. `design-test` -> `execute-test`
-6. `monitor-sprint`: 상태/리스크 갱신 및 회고 생성
-7. Sprint 종료 후 `define-2w` 또는 `design-phase`로 다음 루프 진입
+6. `monitor-sprint`: 상태/리스크 갱신 및 재평가
+7. `review-sprint`: `3-learning/`에 회고/학습 정리
+8. Sprint 종료 후 `define-2w` 또는 `design-phase`로 다음 스프린트 진입
 
 ## Legacy Skills
 
@@ -35,7 +37,7 @@
   - `sprint-start`
   - `sprint-complete`
   - `us-complete`
-- 매핑/전환 기준은 `docs/operations/skills-lifecycle.md`를 참고한다.
+- 매핑/전환 기준은 `docs/skill-ops/skills-lifecycle.md`를 참고한다.
 
 ## 형식 규칙
 

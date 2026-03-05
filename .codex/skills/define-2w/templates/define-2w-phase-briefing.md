@@ -1,4 +1,4 @@
-# Define 2W Phase Briefing vN - [문제명]
+# Define 2W Phase Briefing - [문제명]
 
 ## 한눈에 결론
 - 권장 선택: 연속 진행 | 새로 시작
@@ -34,9 +34,8 @@
 
 ## 부록) 결정 로그
 - 근거 문서:
-  - `.agile/loops/loop-vN-1/02-design-phase.md` 또는 최신 `02-design-phase.md`
-  - (legacy) `.agile/loops/loop-vN-1/04-design-phase.md` 또는 최신 `04-design-phase.md`
-  - `.agile/loops/loop-vN-1/sprint/02-sprint-status.md` (있으면)
-  - `.agile/loops/loop-vN-1/sprint/04-sprint-retrospective.md` (있으면)
+  - 직전 실행의 `design-phase` 관련 산출 문서
+  - 직전 실행의 상태 문서 (있으면)
+  - 직전 실행의 회고 문서 (있으면)
 - 사용자 코멘트:
 - 결정 시각:

@@ -18,9 +18,9 @@
 ## 2) 매핑 결과
 | 항목 | 레거시 소스 | 신버전 대상 | 상태 | 메모 |
 | --- | --- | --- | --- | --- |
-| 2W Brainstorm | `auto-detected or --source-2w` | `.agile/loops/loop-vN/01-02-define-2w.md` |  |  |
-| Case Study | `auto-detected or --source-case-study` | `.agile/loops/loop-vN/01-03-define-2w-case-study.md` |  |  |
-| How Diagram | `auto-detected or --source-how` | `.agile/loops/loop-vN/02-design-phase.md` |  |  |
+| 2W Brainstorm | `auto-detected or --source-2w` | `.agile/loops/loop-vN/define-2w.md` |  |  |
+| Case Study | `auto-detected or --source-case-study` | `.agile/loops/loop-vN/define-2w-case-study.md` |  |  |
+| How Diagram | `auto-detected or --source-how` | `.agile/loops/loop-vN/design-phase.md` |  |  |
 
 ## 3) 실행 요약
 - copied:

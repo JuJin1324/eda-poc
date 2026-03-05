@@ -27,10 +27,10 @@
 - status: seeded
 - date: 2026-03-03
 - situation: status 문서가 없어 스프린트 진행률 집계가 불가능했던 상황
-- signal: loop에 design-phase는 있지만 sprint/02-sprint-status.md가 없음
-- choice: monitor-sprint가 design-phase 기반으로 status 문서를 초기 생성
+- signal: sprint-N에 1-direction은 있지만 2-delivery/sprint-status.md가 없음
+- choice: monitor-sprint가 1-direction 산출물을 기반으로 status 문서를 초기 생성
 - result: 스프린트 추적 시작 지점 확보
-- condition: 새 loop를 시작한 직후
+- condition: 새 sprint를 시작한 직후
 - caution: 지표나 증적 없이 감으로 판단하지 않는다.
 - related_artifacts:
   - N/A (seeded)
@@ -40,10 +40,10 @@
 - date: 2026-03-03
 - situation: Blocker를 별도 채널에만 기록해 현황 문서와 분리된 상황
 - signal: 회의 시 blocker 최신 상태를 찾는 시간이 길어짐
-- choice: 02-sprint-status.md의 Risks/Blockers 섹션을 단일 소스로 사용
+- choice: sprint-status.md의 Risks/Blockers 섹션을 단일 소스로 사용
 - result: 모니터링 결과와 대응 논의가 즉시 연결됨
 - condition: 외부 의존 이슈가 잦은 스프린트
-- caution: 루프 목표를 벗어나는 확장은 별도 의사결정으로 분리한다.
+- caution: 스프린트 목표를 벗어나는 확장은 별도 의사결정으로 분리한다.
 - related_artifacts:
   - N/A (seeded)
 

@@ -1,21 +1,22 @@
 ---
 name: define-2w
-description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 질문 게이트로 라운드(vN) 단위 실행 방향을 정하는 메인 스킬. 질문 과잉을 막고 스프린트 학습을 반영해 2W를 업데이트한다."
+description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 질문 게이트로 실행 방향을 정하는 메인 스킬. 질문 과잉을 막고 스프린트 학습을 반영해 2W를 업데이트한다."
 ---
 
 # Define 2W
 
 ## 목적
-무엇/왜 우선 원칙을 지키면서 질문 수를 줄여 **문제 정의를 먼저 확정**하고, 그 결과물로 **실행 가능한 2W vN**을 빠르게 만든다.
+무엇/왜 우선 원칙을 지키면서 질문 수를 줄여 **문제 정의를 먼저 확정**하고, 그 결과물로 **실행 가능한 2W**를 빠르게 만든다.
 
 핵심 원칙:
 - 2W의 코어 목적은 `문제 정의`이고, What/Why는 그 정의를 문서화한 결과다
-- `완벽한 2W`가 아니라 `실행 가능한 2W vN`
+- `완벽한 2W`가 아니라 `실행 가능한 2W`
 - 질문은 최소화하고, 모호성은 스프린트 학습으로 줄인다
 - 사용자가 말한 방법(How)에서 무엇/왜를 역으로 도출한다
 - MVP 범위 명확화는 `design-phase`에서 수행하고, 2W는 문제 정의까지 책임진다
-- 이전 design-phase 문서(`02-design-phase.md`, legacy: `04-design-phase.md`)가 있으면 다음 Phase 연속성 게이트를 먼저 통과한다
+- 이전 design-phase 산출물이 있으면 다음 Phase 연속성 게이트를 먼저 통과한다
 - 방법(How) 상세는 여기서 하지 않고 `/design-phase`로 넘긴다
+- 단계 게이트/라우팅/산출 디렉터리 계약은 `docs/skill-ops/framework.md`를 우선 준수한다
 
 ## 문서 작성 원칙 (가독성)
 - 본문은 읽는 사람 기준의 흐름으로 쓴다: `배경 -> 입력 신호 -> What/Why -> 결정/다음 액션`
@@ -33,42 +34,33 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - 다음 단계 결정 (진행/보류/중단)
 
 ## 출력물
-- `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md` (선택: 이전 `02-design-phase.md` 존재 시 필수)
-- `.agile/loops/loop-vN/01-02-define-2w.md`
-- `.agile/loops/loop-vN/01-03-define-2w-case-study.md` (선택: 사례 연구 실행 시 필수)
-- `.agile/loops/loop-vN/01-04-define-2w-patterns.md` (선택: 패턴 연구 실행 시 필수)
+- `1-direction/` 디렉터리 내 2W 본문 문서 1개 (필수)
+- `1-direction/` 디렉터리 내 Phase 브리핑 문서 1개 (선택: 이전 `design-phase` 산출물 존재 시)
+- `1-direction/` 디렉터리 내 사례 연구 문서 1개 (선택: 사례 연구 실행 시)
+- `1-direction/` 디렉터리 내 패턴 연구 문서 1개 (선택: 패턴 연구 실행 시)
+- 파일명은 실행 주체 자율이며, 단계 디렉터리 계약은 `docs/skill-ops/framework.md`를 따른다.
 
 템플릿:
-- `templates/define-2w-phase-briefing-vN.md`
-- `templates/define-2w-vN.md`
-- `templates/define-2w-case-study-vN.md`
-- `templates/define-2w-patterns-vN.md`
+- `templates/define-2w-phase-briefing.md`
+- `templates/define-2w.md`
+- `templates/define-2w-case-study.md`
+- `templates/define-2w-patterns.md`
 
 참고 문서:
-- `references/philosophy.md`
-  - 2W를 스프린트 단위로 줄이는 이유가 헷갈릴 때
-  - 사례 연구/패턴 연구를 언제 켜고 끌지 판단 근거가 필요할 때
+- `docs/skill-ops/framework.md`
+  - 본 스킬의 단계 진입/전환 조건과 산출 디렉터리 계약을 확인할 때
 - `references/experience.md`
   - 유사한 2W 문제에서 어떤 역추출/게이트 판단이 유효했는지 빠르게 참고할 때
 
 ## 작동 방식
 
 ### 1단계. 준비
-- `references/philosophy.md` 핵심 원칙 확인
-- `.agile/loops/loop-vN/` 디렉터리 확인/생성
-- 직전 루프의 design-phase 문서 존재 여부 확인 (`02-design-phase.md`, legacy: `04-design-phase.md`)
-- 직전 루프의 sprint 진행 문서(`sprint/02-sprint-status.md`, `sprint/04-sprint-retrospective.md`) 존재 여부 확인
-
-확인 경로(예):
-- `.agile/loops/loop-vN-1/02-design-phase.md`
-- 또는 가장 최신 루프의 `02-design-phase.md`
-- (legacy) `.agile/loops/loop-vN-1/04-design-phase.md`
-- (legacy) 또는 가장 최신 루프의 `04-design-phase.md`
-- `.agile/loops/loop-vN-1/sprint/02-sprint-status.md`
-- `.agile/loops/loop-vN-1/sprint/04-sprint-retrospective.md`
+- `docs/skill-ops/framework.md` 기준으로 현재 단계(`C1 Direction`)와 단계 산출 디렉터리(`1-direction/`) 확인
+- 직전 실행의 `design-phase` 산출물 존재 여부 확인
+- 직전 실행의 상태/회고 산출물 존재 여부 확인
 
 ### 2단계. Phase 연속성 게이트
-직전 design-phase 문서(`02-design-phase.md`, legacy: `04-design-phase.md`)가 있으면 **사용자 선택을 받기 전에** 다음을 먼저 브리핑한다.
+직전 실행의 design-phase 산출물이 있으면 **사용자 선택을 받기 전에** 다음을 먼저 브리핑한다.
 
 - 감지 대상:
   - 다음 후보 Phase(보통 `Phase-2`, `Phase-3`)
@@ -80,8 +72,7 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
   - `새로 시작 권장`: 방향/문제 자체가 바뀌었을 때
 
 문서 산출 규칙:
-- `templates/define-2w-phase-briefing-vN.md`로
-  `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md`를 먼저 작성한다.
+- `templates/define-2w-phase-briefing.md`를 기반으로 현재 실행의 `1-direction/`에 브리핑 문서를 먼저 작성한다.
 - 브리핑 문서도 `한눈에 결론 -> 진행 요약 -> 다음 Phase 후보 -> 선택지 비교 -> AI 권장안` 흐름을 유지한다.
 - 사용자에게 핵심 요약(2~3줄)과 `AI 추천`을 전달한 뒤 선택을 요청한다.
 - 브리핑 문서는 선택 근거를 남기기 위한 용도로 유지하되, 과도한 메타 기록은 생략한다.
@@ -129,7 +120,7 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - `진행`: 사례 연구 실행
   - 최대 3개 사례만 조사
   - 각 사례는 3줄 요약
-  - 결과를 `.agile/loops/loop-vN/01-03-define-2w-case-study.md`에 기록
+  - 결과를 현재 실행의 `1-direction/` 디렉터리에 기록
   - 2W 문서에는 핵심 반영점만 요약
 
 ### 6단계. 안티패턴/베스트 프랙티스 연구 판단 게이트
@@ -144,20 +135,11 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
   - 안티패턴 최대 3개 조사
   - 베스트 프랙티스 최대 3개 조사
   - 항목당 3줄 요약
-  - 결과를 `.agile/loops/loop-vN/01-04-define-2w-patterns.md`에 기록
+  - 결과를 현재 실행의 `1-direction/` 디렉터리에 기록
   - 2W 문서에는 핵심 반영점만 요약
 
-### 7단계. 브랜치 생성
-- 2W 문서화 전에 작업 브랜치를 먼저 생성한다.
-- 브랜치명 규칙: `loop-vN`
-- 실행:
-  - 현재 브랜치 확인: `git branch --show-current`
-  - 브랜치가 없으면 생성: `git checkout -b loop-vN`
-  - 이미 있으면 해당 브랜치에서 계속 진행
-- 생성한 `loop-vN` 브랜치는 define-2w 이후 단계(design-phase~test/monitor)까지 동일하게 사용한다.
-
-### 8단계. 2W vN 문서화
-`templates/define-2w-vN.md`로 `.agile/loops/loop-vN/01-02-define-2w.md`를 작성한다.
+### 7단계. 2W 문서화
+`templates/define-2w.md`를 기반으로 현재 실행의 `1-direction/`에 2W 문서를 작성한다.
 - 읽기용 본문:
   - 한눈에 결론(문제 정의 1문장 + 결정 + 다음 단계)
   - 배경/입력 신호/What/Why 재정의
@@ -166,10 +148,10 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
   - 게이트 선택/코멘트/시각은 문서 마지막 `부록`에 분리
   - 실행된 연구 문서 경로와 상위 제약/가정/미확정 항목은 부록에만 기록
 
-### 9단계. 다음 단계 결정
-- `진행(GO)`: `/design-phase`로 넘어가 MVP 범위/Phase/US를 설계
+### 8단계. 다음 단계 결정
+- `진행(GO)`: 다음 적용 스킬은 `docs/skill-ops/framework-applied-skills.md`의 `단계별 적용 순서`를 참조해 결정한다.
 - `보류(HOLD)`: 질문 1개만 추가 후 2W 재작성
-- `중단(STOP)`: 문제를 분할하고 새 vN으로 재시작
+- `중단(STOP)`: 문제를 분할하고 새 2W로 재시작
 
 ## 안티패턴
 - 사용자에게 What/Why를 직접 정답처럼 요구함
@@ -179,24 +161,23 @@ description: "2W(무엇/왜)를 통해 문제를 명확히 정의하고, 최소 
 - 선택 전 브리핑 없이 `연속 진행 | 새로 시작` 선택부터 요구함
 - 브리핑 문서 없이 구두 요약만으로 선택을 유도함
 - 이전 phase 문서가 있는데 브리핑 없이 바로 자유 입력을 요청함
-- 브랜치 생성 없이 2W 문서를 바로 작성해 변경 추적을 어렵게 함
+- 프레임워크 단계 게이트 확인 없이 2W 문서를 바로 작성해 라우팅 충돌을 만듦
 - 사례를 장문 리서치로 확장함
 - 운영 로그를 본문에 섞어 스토리 흐름을 끊음
 - 2W 단계에서 구현 설계로 진입함
 
 ## 완료 조건
 - Phase 연속성 게이트 기록 완료 (이전 phase 존재 시 필수)
-- 이전 phase 문서 존재 시 `.agile/loops/loop-vN/01-01-define-2w-phase-briefing.md` 작성 완료
+- 이전 phase 산출물이 있으면 `1-direction/`에 브리핑 문서 작성 완료
 - 단일 자유 입력 수집 완료
 - What 1문장, Why 1문장 도출 완료
 - 문제 정의 1문장(What+Why 통합) 확정
 - 사례 연구 게이트 기록 완료 (AI 추천 + 사용자 선택)
-- 사례 연구를 실행했다면 `.agile/loops/loop-vN/01-03-define-2w-case-study.md` 작성 완료
+- 사례 연구를 실행했다면 `1-direction/`에 사례 연구 문서 작성 완료
 - 패턴 연구 게이트 기록 완료 (AI 추천 + 사용자 선택)
-- 패턴 연구를 실행했다면 `.agile/loops/loop-vN/01-04-define-2w-patterns.md` 작성 완료
-- `loop-vN` 작업 브랜치 생성/전환 완료
-- `.agile/loops/loop-vN/01-02-define-2w.md` 작성 완료
+- 패턴 연구를 실행했다면 `1-direction/`에 패턴 연구 문서 작성 완료
+- `1-direction/`에 2W 본문 문서 작성 완료
 - 진행/보류/중단 결정 완료
 
 ## 다음 단계
-- 진행(GO)이면 `/design-phase` 실행
+- 진행(GO)이면 `docs/skill-ops/framework-applied-skills.md`의 `단계별 적용 순서`를 참조해 다음 스킬을 선택한다.

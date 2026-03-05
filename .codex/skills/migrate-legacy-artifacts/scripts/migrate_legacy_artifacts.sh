@@ -234,9 +234,9 @@ else
   )"
 fi
 
-DEST_2W="${TARGET_LOOP_DIR}/01-02-define-2w.md"
-DEST_CASE="${TARGET_LOOP_DIR}/01-03-define-2w-case-study.md"
-DEST_PHASE="${TARGET_LOOP_DIR}/02-design-phase.md"
+DEST_2W="${TARGET_LOOP_DIR}/define-2w.md"
+DEST_CASE="${TARGET_LOOP_DIR}/define-2w-case-study.md"
+DEST_PHASE="${TARGET_LOOP_DIR}/design-phase.md"
 
 labels=("2W Brainstorm" "Case Study" "How Diagram")
 srcs=("${SRC_2W}" "${SRC_CASE}" "${SRC_HOW}")

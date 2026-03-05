@@ -6,7 +6,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 # Design Implementation
 
 ## 목적
-`.agile/loops/loop-vN/02-design-phase.md`에서 정의된 US를 실제 구현 가능한 상세 설계로 변환한다.
+`.agile/loops/loop-vN/design-phase.md`에서 정의된 US를 실제 구현 가능한 상세 설계로 변환한다.
 
 핵심 원칙:
 - 바퀴를 새로 만들지 않는다: 기술 스택 결정 전 웹 검색으로 재사용 가능한 라이브러리/서비스를 먼저 검토한다.
@@ -15,6 +15,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - C4 Container는 외부 의존성이 복잡할 때만 선택적으로 작성한다.
 - 기능 정리와 ADR을 함께 기록한다.
 - US 단위로 설계를 분리해 변경 비용을 줄인다.
+- 단계 게이트/라우팅/산출 디렉터리 계약은 `docs/skill-ops/framework.md`를 우선 준수한다.
 
 ## 이 스킬이 메인으로 담당하는 것
 - 구현 대상 기능 목록 정리
@@ -27,12 +28,12 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 구현 실행 스킬로 전달 가능한 설계 산출물 생성
 
 ## 입력
-- `.agile/loops/loop-vN/02-design-phase.md`
-- `.agile/loops/loop-vN/sprint/02-sprint-status.md` (있으면 진행 상태 우선 참조)
+- `.agile/loops/loop-vN/design-phase.md`
+- `.agile/loops/loop-vN/sprint/sprint-status.md` (있으면 진행 상태 우선 참조)
 - `.agile/context/tech-stack.md` (있다면 우선 사용)
 
 ## 출력물
-- `.agile/loops/loop-vN/03-design-implementation.md`
+- `.agile/loops/loop-vN/design-implementation.md`
 - `.agile/context/tech-stack.md` (없으면 생성)
 
 템플릿:
@@ -40,7 +41,8 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - `templates/tech-stack.md`
 
 참고 문서:
-- `references/philosophy.md`
+- `docs/skill-ops/framework.md`
+  - 본 스킬의 단계 진입/전환 조건과 산출 디렉터리 계약을 확인할 때
 - `references/diagram-guidelines.md`
 - `references/experience.md`
   - 스택 선택, 다이어그램 게이트, 인터페이스 정리에서 유효했던 패턴을 참고할 때
@@ -52,7 +54,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 파일이 있으면: "기존 기술 스택 문서를 그대로 사용할지" 사용자에게 확인
 - 파일이 없으면: 사용자에게 기술 스택 입력을 받고 `templates/tech-stack.md` 형식으로 저장
 - 저장 경로: `.agile/context/tech-stack.md`
-- 확정된 스택을 `.agile/loops/loop-vN/03-design-implementation.md`에 링크
+- 확정된 스택을 `.agile/loops/loop-vN/design-implementation.md`에 링크
 
 ### 2단계. 라이브러리/서비스 후보 웹 검색
 - 구현 목적에 맞는 라이브러리/서비스 후보를 웹 검색으로 수집
@@ -120,7 +122,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - `tech-stack.md` 확인/확정 완료
 - 파일이 없던 경우 사용자 입력 기반으로 `tech-stack.md` 생성/저장 완료
 - 웹 검색 신규 후보가 있던 경우 `tech-stack.md` 반영 여부 확인/기록 완료
-- `.agile/loops/loop-vN/03-design-implementation.md` 작성 완료
+- `.agile/loops/loop-vN/design-implementation.md` 작성 완료
 - 기능 목록 정리 완료
 - Sequence/Flowchart 포함
 - C4 Container 게이트 기록 완료 (AI 추천 + 사용자 선택)
@@ -130,4 +132,4 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - `execute-implementation`이 바로 착수 가능한 전달 정보 포함
 
 ## 다음 단계
-- `/execute-implementation` 실행
+- 다음 적용 스킬은 `docs/skill-ops/framework-applied-skills.md`의 `단계별 적용 순서`를 참조해 결정한다.

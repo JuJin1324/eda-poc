@@ -1,34 +1,6 @@
-# US-{N}.{M} Retrospective
+# Deprecated Template
 
-## 한눈에 결론
-- US 목표 달성 여부:
-- 핵심 결과:
-- 다음 US에 반영할 점:
+이 템플릿은 `monitor-sprint`에서 더 이상 사용하지 않는다.
 
----
-
-## 1) 목표와 결과
-- US 목표:
-- 달성 여부:
-- 핵심 결과:
-
-## 2) 잘된 점
-- 항목 1:
-
-## 3) 아쉬운 점
-- 항목 1:
-- 원인:
-
-## 4) 증적
-- 관련 파일:
-- 테스트/검증 결과:
-
-## 5) 다음 액션
-1. 후속 작업 1:
-2. 후속 작업 2:
-
----
-
-## 부록) 운영 로그 (필요 시만 작성)
-- 변경 이력:
-- 의사결정 메모:
+- US 회고 템플릿: `../../review-sprint/templates/us-retrospective.md`
+- Sprint 회고 템플릿: `../../review-sprint/templates/sprint-retrospective.md`

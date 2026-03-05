@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Sprint"
+  short_description: "Delivery 산출물을 바탕으로 회고/학습을 정리하고 다음 스프린트 시작 여부를 결정"
+  default_prompt: "Use $review-sprint to create learning-stage artifacts from the current sprint delivery outputs. Always produce: (1) Sprint 결과 요약, (2) True/False 가정 검증, (3) Unknown, (4) Keep/Drop, (5) 다음 스프린트 시작/종료 결정. Store outputs under 3-learning/ and follow docs/skill-ops/framework-applied-skills.md for routing."

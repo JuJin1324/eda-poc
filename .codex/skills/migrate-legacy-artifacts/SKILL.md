@@ -15,11 +15,11 @@ description: "구버전 스킬 산출물(예: 2w-brainstorm.md, case-studies.md,
 - 마이그레이션 결과를 리포트 파일로 남긴다.
 
 ## 기본 매핑 (legacy-generic)
-- `2W 문서` 후보 자동 탐색 -> `.agile/loops/loop-vN/01-02-define-2w.md`
+- `2W 문서` 후보 자동 탐색 -> `.agile/loops/loop-vN/define-2w.md`
   - 우선순위 예: `2w-brainstorm.md`, `docs/planning/2w-brainstorm.md`, `problems/*/2w-brainstorm.md`
-- `사례 연구 문서` 후보 자동 탐색 -> `.agile/loops/loop-vN/01-03-define-2w-case-study.md`
+- `사례 연구 문서` 후보 자동 탐색 -> `.agile/loops/loop-vN/define-2w-case-study.md`
   - 우선순위 예: `2w-case-study*.md`, `case-studies.md`, `eda-kafka-case-studies.md`, `docs/planning/*`
-- `How/Phase 문서` 후보 자동 탐색 -> `.agile/loops/loop-vN/02-design-phase.md`
+- `How/Phase 문서` 후보 자동 탐색 -> `.agile/loops/loop-vN/design-phase.md`
   - 우선순위 예: `how-diagram.md`, `1h-agile-phase.md`, `docs/planning/*`, `problems/*`
 
 ## 입력
@@ -34,9 +34,9 @@ description: "구버전 스킬 산출물(예: 2w-brainstorm.md, case-studies.md,
   - `--source-how`
 
 ## 출력물
-- `<project-root>/.agile/loops/loop-vN/01-02-define-2w.md` (선택: 소스 존재 시)
-- `<project-root>/.agile/loops/loop-vN/01-03-define-2w-case-study.md` (선택: 소스 존재 시)
-- `<project-root>/.agile/loops/loop-vN/02-design-phase.md` (선택: 소스 존재 시)
+- `<project-root>/.agile/loops/loop-vN/define-2w.md` (선택: 소스 존재 시)
+- `<project-root>/.agile/loops/loop-vN/define-2w-case-study.md` (선택: 소스 존재 시)
+- `<project-root>/.agile/loops/loop-vN/design-phase.md` (선택: 소스 존재 시)
 - `<project-root>/.agile/migration/legacy-migration-report-vN.md`
 
 템플릿:
@@ -88,9 +88,9 @@ bash .codex/skills/migrate-legacy-artifacts/scripts/migrate_legacy_artifacts.sh 
 
 ### Step 4. 신버전 입력 검증
 다음 경로를 확인한다.
-- `.agile/loops/loop-vN/01-02-define-2w.md`
-- `.agile/loops/loop-vN/01-03-define-2w-case-study.md` (생성된 경우)
-- `.agile/loops/loop-vN/02-design-phase.md`
+- `.agile/loops/loop-vN/define-2w.md`
+- `.agile/loops/loop-vN/define-2w-case-study.md` (생성된 경우)
+- `.agile/loops/loop-vN/design-phase.md`
 
 검증이 끝나면 신버전 스킬로 이어서 실행한다.
 - `/define-2w` (2W 갱신이 필요한 경우)

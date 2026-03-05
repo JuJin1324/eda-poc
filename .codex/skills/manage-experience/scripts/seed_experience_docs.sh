@@ -15,6 +15,7 @@ SKILLS=(
   "design-test"
   "execute-test"
   "monitor-sprint"
+  "review-sprint"
   "record-adr"
   "sync-agent-skills"
   "manage-experience"
@@ -144,10 +145,10 @@ for skill in "${SKILLS[@]}"; do
     monitor-sprint)
       title="Monitor Sprint"
       e1_situation="상태 문서가 없어 스프린트 진행률 집계가 불가능했던 상황"
-      e1_signal="loop에 design-phase는 있지만 sprint/02-sprint-status.md가 없음"
-      e1_choice="monitor-sprint가 design-phase를 기반으로 status 문서를 0% 초기값으로 자동 생성"
+      e1_signal="sprint-N에 1-direction은 있지만 2-delivery/sprint-status.md가 없음"
+      e1_choice="monitor-sprint가 1-direction 산출물을 기반으로 상태 문서를 0% 초기값으로 자동 생성"
       e1_result="별도 운영 스킬 없이도 스프린트 추적 시작점 확보"
-      e1_condition="새 loop를 시작한 직후"
+      e1_condition="새 sprint를 시작한 직후"
       e2_situation="진행률 숫자만 보고 일정 리스크를 놓친 상황"
       e2_signal="완료율은 높지만 US 목표일을 넘김"
       e2_choice="진행률과 US 일정 상태(Ahead/On-track/Delayed)를 함께 확인"
@@ -155,9 +156,27 @@ for skill in "${SKILLS[@]}"; do
       e2_condition="US별 완료 목표일이 정의된 스프린트"
       e3_situation="Blocker를 별도 채널에만 기록해 현황 문서와 분리된 상황"
       e3_signal="회의 시 blocker 최신 상태를 찾는 시간이 길어짐"
-      e3_choice="02-sprint-status.md의 Risks/Blockers 섹션을 단일 소스로 사용"
+      e3_choice="sprint-status.md의 Risks/Blockers 섹션을 단일 소스로 사용"
       e3_result="모니터링 결과와 대응 논의가 즉시 연결됨"
       e3_condition="외부 의존 이슈가 잦은 스프린트"
+      ;;
+    review-sprint)
+      title="Review Sprint"
+      e1_situation="스프린트 종료는 했지만 학습 항목이 문서화되지 않아 반복 실수가 발생한 상황"
+      e1_signal="다음 스프린트 계획 회의에서 근거 문서 없이 기억에 의존함"
+      e1_choice="True/False/Unknown과 Keep/Drop 구조를 고정해 Sprint 회고 문서를 작성"
+      e1_result="다음 스프린트 시작 기준이 명확해짐"
+      e1_condition="delivery 산출물은 충분하지만 학습 정리가 비어 있는 종료 시점"
+      e2_situation="미완료 US 원인을 남기지 않아 같은 지연이 반복된 상황"
+      e2_signal="동일 blocker가 스프린트마다 반복됨"
+      e2_choice="완료 US/미완료 US를 분리하고 원인과 다음 액션을 US 회고에 기록"
+      e2_result="재발 방지 액션이 다음 스프린트에 바로 반영됨"
+      e2_condition="외부 의존이 많거나 우선순위 변동이 큰 스프린트"
+      e3_situation="종료 여부를 명시하지 않아 작업이 관성적으로 계속된 상황"
+      e3_signal="목표 달성 후에도 종료 판단 없이 작업이 계속 추가됨"
+      e3_choice="회고 문서에 시작/종료 결정을 이유와 함께 고정 기록"
+      e3_result="프레임워크 재진입 시점과 종료 시점이 분명해짐"
+      e3_condition="MVP 완료나 범위 재정의가 필요한 스프린트 경계"
       ;;
     record-adr)
       title="Record ADR"
@@ -283,7 +302,7 @@ for skill in "${SKILLS[@]}"; do
 - choice: ${e3_choice}
 - result: ${e3_result}
 - condition: ${e3_condition}
-- caution: 루프 목표를 벗어나는 확장은 별도 의사결정으로 분리한다.
+- caution: 스프린트 목표를 벗어나는 확장은 별도 의사결정으로 분리한다.
 - related_artifacts:
   - N/A (seeded)
 

@@ -1,4 +1,4 @@
-# Design Phase vN - [문제명]
+# Design Phase - [문제명]
 
 ## 한눈에 결론
 - Phase 설계 핵심 결론:
@@ -49,8 +49,9 @@
 - 스프린트 목표(Sprint Goal):
 - 완료 기준(Definition of Done):
 - 선행 의존사항:
-- 상태 문서 작성/갱신 위치: `/monitor-sprint` (`02-sprint-status.md`)
-- 구현 Step 작성 위치: `/design-implementation` 단계
+- 상태 문서 작성/갱신 위치: `2-delivery/` (Delivery 단계 산출 디렉터리)
+- 구현 Step 작성 위치: `2-delivery/` (Delivery 단계 산출 디렉터리)
+- 회고/학습 작성 위치: `3-learning/` (Learning 단계 산출 디렉터리)
 
 ## 6) 다음 액션
 1. 다음으로 바로 실행할 일 1:
