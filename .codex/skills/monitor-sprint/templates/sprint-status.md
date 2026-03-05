@@ -14,10 +14,10 @@
 - 남은 기간:
 
 ## 2) US Progress
-| US | 상태 | 일정 상태 | 다음 스킬 | 근거 | 다음 액션 |
+| US | 상태 | 완료 목표일 | 일정 상태 | 다음 스킬 | 다음 액션 |
 | --- | --- | --- | --- | --- | --- |
-| US-{N}.1 | Todo | On-track | /design-implementation |  |  |
-| US-{N}.2 | Todo | On-track | /design-implementation |  |  |
+| US-{N}.1 | Todo | YYYY-MM-DD | On-track | /design-implementation |  |
+| US-{N}.2 | Todo | YYYY-MM-DD | On-track | /design-implementation |  |
 
 ## 3) Risks / Blockers
 - 리스크 1:

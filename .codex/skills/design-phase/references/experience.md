@@ -47,6 +47,19 @@
 - related_artifacts:
   - N/A (seeded)
 
+### EXP-004
+- status: seeded
+- date: 2026-03-05
+- situation: US는 정의됐지만 완료 목표일이 없어 Delivery 일정 상태를 계산하지 못한 상황
+- signal: monitor-sprint에서 일정 상태를 전부 기본값(On-track)으로만 표시
+- choice: design-phase에서 스프린트 기간 + Phase-1 US 완료 목표일을 의무로 확정
+- result: Ahead/On-track/Delayed를 기준일 대비 자동 계산 가능
+- condition: 1페이즈 내 US가 2개 이상이고 선행관계가 있는 스프린트
+- caution: 목표일은 \"개발 완료일\"이 아니라 \"완료 기준 증적 확인일\"로 정의한다.
+- related_artifacts:
+  - `.agile/sprints/sprint-1/1-direction/design-phase.md`
+  - `.agile/sprints/sprint-1/2-delivery/sprint-status.md`
+
 ## Validated Entries
 - 아직 없음
 
