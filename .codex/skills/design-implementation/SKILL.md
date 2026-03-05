@@ -15,6 +15,8 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - C4 Container는 외부 의존성이 복잡할 때만 선택적으로 작성한다.
 - 기능 정리와 ADR을 함께 기록한다.
 - US 단위로 설계를 분리해 변경 비용을 줄인다.
+- 기본 실행 단위는 US 1개로 고정하고, `설계 -> 구현 -> 테스트 -> 상태갱신` 루프를 순차 반복한다.
+- US 2개 동시 설계는 상호 독립성이 높고 사용자가 명시적으로 요청한 경우에만 예외로 허용한다.
 - 단계 게이트/라우팅/산출 디렉터리 계약은 `docs/skill-ops/framework.md`를 우선 준수한다.
 
 ## 이 스킬이 메인으로 담당하는 것
@@ -70,10 +72,19 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 테스트 스택
 
 ### 3단계. 대상 US/기능 정리
-- 이번 스프린트에서 구현할 US를 1~2개 선택
+- 이번 실행에서 구현 설계할 US를 기본 1개 선택
+- US 2개 동시 설계는 아래 조건을 모두 만족할 때만 선택:
+  - 두 US 사이 선행 의존성이 없음
+  - 실패/지연 영향이 서로 전파되지 않음
+  - 사용자가 동시 설계를 명시적으로 요청함
 - US별 기능 목록을 정리
 - US별 설계 범위를 명시
 - US별 구현 Step을 2~5개로 작성
+
+### 3-1단계. 순차 루프 계획 명시
+- 선택한 US에 대해 아래 루프 순서를 문서에 명시:
+  - `design-implementation -> execute-implementation -> design-test -> execute-test -> monitor-sprint`
+- 여러 US가 있으면 루프를 US별로 순차 반복하도록 다음 액션에 기록
 
 ### 4단계. 구현 경계 정의
 - In Scope / Out of Scope 확정
@@ -117,18 +128,22 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - 실패 흐름을 생략
 - ADR 없이 의사결정 근거를 구두로만 남김
 - 기술 스택 합의 없이 구현 설계를 진행
+- 선행 의존성이 있는 US 2개를 한 번에 설계해 WIP를 키움
 
 ## 완료 조건
 - `tech-stack.md` 확인/확정 완료
 - 파일이 없던 경우 사용자 입력 기반으로 `tech-stack.md` 생성/저장 완료
 - 웹 검색 신규 후보가 있던 경우 `tech-stack.md` 반영 여부 확인/기록 완료
 - `.agile/loops/loop-vN/design-implementation.md` 작성 완료
+- 대상 US 수(기본 1개)와 선택 근거 기록 완료
+- US 2개 동시 설계 시 예외 조건 충족 근거 기록 완료
 - 기능 목록 정리 완료
 - Sequence/Flowchart 포함
 - C4 Container 게이트 기록 완료 (AI 추천 + 사용자 선택)
 - C4 Container를 생성했다면 책임/경계가 명확해야 함
 - ADR 요약 기록 완료
 - US별 구현 경계와 테스트 포인트 명시
+- 다음 단계 루프(`execute-implementation -> design-test -> execute-test -> monitor-sprint`)가 US 기준으로 연결되어야 함
 - `execute-implementation`이 바로 착수 가능한 전달 정보 포함
 
 ## 다음 단계

@@ -9,7 +9,9 @@
 ---
 
 ## 1) 대상 범위와 목표
-- 대상 US:
+- 대상 US (기본 1개):
+- 동시 설계 여부: 단일 US | 다중 US(예외)
+- 다중 US 예외 근거(해당 시):
 - 이번 설계 목표:
 - 완료 기준:
 - 제외 범위:
@@ -80,6 +82,7 @@ flowchart TD
 - 테스트 포인트:
 - 리스크/완화:
 - 선행 의존사항:
+- US 루프 순서: `execute-implementation -> design-test -> execute-test -> monitor-sprint`
 
 ---
 

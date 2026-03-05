@@ -47,6 +47,18 @@
 - related_artifacts:
   - N/A (seeded)
 
+### EXP-004
+- status: seeded
+- date: 2026-03-05
+- situation: US 2개를 한 번에 설계해 구현/테스트 큐가 커진 상황
+- signal: execute/test 단계가 병목되며 monitor-sprint에서 In-Progress가 오래 유지됨
+- choice: 기본을 US 1개 순차 루프로 고정하고, 2개 동시 설계는 예외 조건으로 제한
+- result: WIP가 줄고 단계별 완료 신호가 빨라짐
+- condition: 선행 의존성이 있는 US가 연속 배치된 스프린트
+- caution: 동시 설계는 반드시 독립성/영향 분리를 먼저 검증한다.
+- related_artifacts:
+  - `.codex/skills/design-implementation/SKILL.md`
+
 ## Validated Entries
 - 아직 없음
 
