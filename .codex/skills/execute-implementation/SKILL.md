@@ -13,6 +13,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 기본 실행 단위는 US 1개이며, 병렬 구현으로 WIP를 늘리지 않는다.
 - 구현 Step은 마이크로 스텝(한 번에 한 변경축)으로 분해해 순차 진행한다.
 - 마이크로 스텝 1개 구현/검증 후 반드시 사용자 리뷰를 받고 다음 스텝으로 진행한다.
+- 리뷰 문서는 US 통합본이 아니라 마이크로 스텝별 개별 파일로 기록한다.
 - 구현 완료 후 동일 US의 테스트 설계/실행으로 즉시 연결한다.
 - 코드 스타일 컨벤션을 강제 적용한다.
 - 구현 증적(테스트/결과)을 남긴다.
@@ -32,7 +33,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 
 ## 출력물
 - 코드 변경사항
-- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md`
+- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M-step-x.x.x-a.md` (마이크로 스텝별 1개)
 
 템플릿:
 - `templates/execute-implementation-vN.md`
@@ -75,11 +76,10 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 실패 시 원인/수정 기록
 
 ### 6단계. 실행 결과 문서화
-- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md`에 결과, 증적, 남은 리스크 기록
-- 코드 변경사항과 US/Step 관계를 매핑 표로 기록
-- 마이크로 스텝 진행표(상태: Done/Partial/Todo)를 기록
-- 마이크로 스텝별 리뷰 게이트 로그(요청/승인/보완)를 기록
-- 핵심 구현 의도(왜 이렇게 구현했는지)를 설명
+- 마이크로 스텝 완료마다 `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M-step-x.x.x-a.md` 생성/갱신
+- 간소 템플릿(`templates/execute-implementation-vN.md`)으로 이번 스텝 범위만 기록
+- 코드 변경사항과 US/Step 관계를 최소 매핑으로 기록
+- 검증 명령/결과, 리뷰 요청 상태(Pending/Approved/Needs changes)를 기록
 - 다음 단계 라우팅을 기록:
   - 기본: 동일 US로 `/design-test` 이동
   - 예외: 구현 미완료/결함 잔존 시 동일 US 구현을 보강
@@ -96,10 +96,9 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 대상 US 구현 완료
 - 테스트/검증 결과 기록 완료
 - 컨벤션 체크리스트 확인 완료
-- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md` 작성 완료
-- 마이크로 스텝별 완료/보류 상태 기록 완료
+- 마이크로 스텝별 문서(`execute-implementation-us-N.M-step-*.md`) 작성 완료
 - 마이크로 스텝별 리뷰 게이트(요청/승인/보완) 이력 기록 완료
-- 코드-요구사항 매핑 및 구현 의도 설명 완료
+- 코드-요구사항 매핑 및 구현 의도 기록 완료
 - 동일 US 기준 다음 단계(`/design-test`) 착수 정보 기록 완료
 
 ## 다음 단계

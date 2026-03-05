@@ -24,7 +24,8 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 
 ## 입력
 - `.agile/sprints/sprint-N/2-delivery/design-test-us-N.M.md`
-- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md`
+- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M-step-*.md` (권장, 스텝 리뷰 문서)
+- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md` (호환용 legacy 문서, 존재 시만)
 
 ## 출력물
 - 테스트 코드 변경사항
