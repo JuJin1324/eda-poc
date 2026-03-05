@@ -28,71 +28,107 @@
   - DLQ 재처리 구현
   - k6 성능 스크립트 작성
 
-### 1-2. 다이어그램
-#### C4 Container (필요 시)
-```mermaid
-flowchart TB
-  User[Client]
+### 1-2. 다이어그램 (Business-first, 다중 허용)
+- 비즈니스 흐름을 우선 제시하고, 기술 흐름은 구현 리스크 전달 목적에서 보조로 사용한다.
+- 동일 타입 다이어그램은 시나리오별로 여러 개 작성할 수 있다.
 
-  subgraph Sync[Sync Pair]
-    OS[order-service-sync :8080]
-    NS[notification-service-sync :8081]
-    SS[shipping-service-sync :8082]
-  end
-
-  subgraph Async[Async Pair]
-    OA[order-service-async :8083]
-    NA[notification-service-async :8084]
-    SA[shipping-service-async :8085]
-  end
-
-  K[(Kafka KRaft :9092)]
-  UI[AKHQ :18080]
-
-  User --> OS
-  User --> OA
-
-  OS --> NS
-  OS --> SS
-
-  OA --> K
-  K --> NA
-  K --> SA
-
-  UI -.monitor.-> K
-```
-
-#### Sequence
+#### A. 비즈니스 흐름 다이어그램
+##### A-1. 동기 방식 비즈니스 흐름 (Before, sprint-0 기준본 재사용)
 ```mermaid
 sequenceDiagram
-  participant Dev as Developer
-  participant C as Docker Compose
-  participant K as Kafka
-  participant OA as order-service-async
+    participant User as 사용자
+    participant OS as 주문
+    participant NS as 알림
+    participant SS as 배송
 
-  Dev->>C: docker compose up -d
-  C->>K: broker start (KRaft)
-  alt Kafka ready
-    C->>OA: service start
-    Dev->>OA: POST /api/async/orders
-    OA->>K: publish OrderCompleted
-    OA-->>Dev: 202 Accepted
-  else Kafka not ready
-    OA-->>Dev: startup/connection error
-    Dev->>C: check healthcheck + depends_on
-  end
+    User->>OS: POST /orders
+    OS->>OS: 재고 차감 (DB)
+
+    par 병렬 REST 호출 (CompletableFuture)
+        OS->>NS: REST: 알림 발송 (고정 1s)
+    and
+        OS->>SS: REST: 배송 접수 (고정 1s)
+    end
+    NS-->>OS: 완료
+    SS-->>OS: 완료
+    OS-->>User: 주문 완료 응답 (약 1s+)
+
+    Note over OS,SS: 문제: 병렬 REST 호출이더라도 사용자는 모든 후속 처리 완료까지 대기 (블로킹)<br/>알림/배송 중 하나라도 장애 시 주문 전체 실패
 ```
 
-#### Flowchart
+##### A-2. 비동기 방식 비즈니스 흐름 (After, sprint-0 기준본 재사용)
+```mermaid
+sequenceDiagram
+    participant User as 사용자
+    participant OA as 주문
+    participant K as Kafka
+    participant NA as 알림 Consumer
+    participant SA as 배송 Consumer
+    participant DLQ as Dead Letter Queue
+
+    User->>OA: POST /orders
+    OA->>OA: 재고 차감 (DB)
+    OA->>K: OrderCompleted 이벤트 발행
+    OA-->>User: 주문 완료 응답 (즉시)
+
+    par Fan-out: 동시 처리
+        K->>NA: 이벤트 전달 (Consumer Group A)
+        NA->>NA: 알림 발송 (고정 1s)
+    and
+        K->>SA: 이벤트 전달 (Consumer Group B)
+        SA->>SA: 배송 접수 (고정 1s)
+    end
+
+    alt 후속 처리 실패 시
+        NA->>DLQ: 실패 메시지 격리
+        Note over DLQ: 복구 후 재처리
+    end
+
+    Note over OA,User: 효과 1: 주문 응답은 재고 차감까지만 대기 (즉시 반환)<br/>효과 2: 알림/배송이 병렬 처리 -> max(1s, 1s) = 1s<br/>효과 3: 알림 장애가 배송에 영향 없음 (장애 격리)
+```
+
+#### B. 기술 흐름 다이어그램
+##### B-1. C4 Container (sprint-0 기준본 재사용)
+```mermaid
+flowchart TB
+    subgraph sync["동기 (Before) — 사용자 블로킹"]
+        order_sync["order-service-sync\n(Spring Boot :8080)\n주문 API + 재고 차감"]
+        notification_sync["notification-service-sync\n(Spring Boot :8081)\n알림 발송 (고정 1s)"]
+        shipping_sync["shipping-service-sync\n(Spring Boot :8082)\n배송 접수 (고정 1s)"]
+        order_sync -- "REST 호출" --> notification_sync
+        order_sync -- "REST 호출" --> shipping_sync
+    end
+
+    subgraph async["비동기 (After) — 즉시 응답 + Fan-out"]
+        order_async["order-service-async\n(Spring Boot :8083)\n주문 API + 재고 차감 + Kafka 발행"]
+        kafka[("Kafka\nMessage Broker")]
+        notification_async["notification-service-async\n(Spring Boot :8084)\nConsumer Group A — 알림 발송 (고정 1s)"]
+        shipping_async["shipping-service-async\n(Spring Boot :8085)\nConsumer Group B — 배송 접수 (고정 1s)"]
+        order_async -- "OrderCompleted\n이벤트 발행" --> kafka
+        kafka -- "Fan-out (Group A)" --> notification_async
+        kafka -- "Fan-out (Group B)" --> shipping_async
+    end
+
+    subgraph infra["공통 인프라 (Docker Compose)"]
+        k6["k6\nLoad Test"]
+        akhq["AKHQ\nKafka UI (:18080)"]
+    end
+
+    k6 -. "부하 테스트" .-> order_sync
+    k6 -. "부하 테스트" .-> order_async
+    akhq -. "토픽/컨슈머 그룹 조회" .-> kafka
+```
+
+##### B-2. 구현 순서 Flowchart (US-1.1 전달용)
 ```mermaid
 flowchart TD
   A[US-1.1 착수] --> B[멀티모듈 구조 생성]
   B --> C[공통 설정/의존성 정의]
   C --> D[Docker Compose 작성]
   D --> E{인프라 기동 성공?}
-  E -->|No| F[포트/헬스체크/의존관계 수정]
+  E -->|아니오| F[포트/헬스체크/의존관계 수정]
   F --> D
-  E -->|Yes| G[API/이벤트 계약 문서 확정]
+  E -->|예| G[API/이벤트 계약 문서 확정]
   G --> H[US-1.1 설계 완료]
 ```
 

@@ -6,7 +6,7 @@
 
 - `define-2w`: 4개 필수 질문으로 2W를 라운드(vN) 단위로 빠르게 정의
 - `design-phase`: 2W vN 기반으로 1페이즈 분량의 Phase+US/지표/완료조건을 설계 (사례/패턴 연구 산출물 선택 반영, 구현 Step은 design-implementation에서 작성)
-- `design-implementation`: 구현 설계 전용 스킬 (Sequence/Flowchart 중심 + C4 Container 선택)
+- `design-implementation`: 구현 설계 전용 스킬 (비즈니스 흐름 우선 + 기술 다이어그램 다중 구성)
 - `execute-implementation`: 구현 실행 전용 스킬 (코드 스타일 컨벤션 + 테스트/검증)
 - `design-test`: 테스트 구현 설계 전용 스킬 (케이스/우선순위/전략/환경)
 - `execute-test`: 테스트 구현 실행 전용 스킬 (실행/실패분석/재검증, 필요 시 monitor-sprint 상태 갱신)
