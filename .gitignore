@@ -9,7 +9,7 @@ target/
 
 # Gradle
 .gradle/
-gradle-wrapper.jar
+.gradle-user-home/
 
 # Maven
 *.jar

@@ -161,11 +161,26 @@ flowchart TD
 
 ## 3) 구현 전달 정보
 - 구현 우선순위:
-  1. Step-1.1.1: Gradle 멀티모듈 및 공통 의존성 설정
-  2. Step-1.1.2: Compose(Kafka/AKHQ/서비스) 구성 및 헬스체크
-  3. Step-1.1.3: 동기/비동기 주문 API 계약 반영
-  4. Step-1.1.4: `order.completed.v1` 이벤트 계약 반영
-  5. Step-1.1.5: 기동/요청 smoke 증적 기록
+  1. Step-1.1.1-a: 루트 Gradle 파일(`settings`, `build`, `properties`) 생성
+  2. Step-1.1.1-b: `shared-contract` DTO/이벤트 스키마 작성
+  3. Step-1.1.1-c: 6개 서비스 모듈 기본 부트 앱/리소스 골격 생성
+  4. Step-1.1.2-a: Compose에 Kafka(KRaft)+AKHQ만 먼저 구성
+  5. Step-1.1.2-b: Sync 3개 서비스 Compose 연결 + 포트 확인
+  6. Step-1.1.2-c: Async 3개 서비스 Compose 연결 + Kafka 의존관계 확인
+  7. Step-1.1.3-a: `POST /api/sync/orders` 계약 구현(201)
+  8. Step-1.1.3-b: `POST /api/async/orders` 계약 구현(202)
+  9. Step-1.1.4-a: `order-service-async` 이벤트 발행 구현
+  10. Step-1.1.4-b: 알림/배송 Kafka consumer(group 분리) 구현
+  11. Step-1.1.5-a: `docker compose config` 정합성 검증
+  12. Step-1.1.5-b: 최소 테스트(`shared-contract`, `order-service-*`) 실행 및 증적 기록
+- 대표 1개 선행 + 확장 게이트:
+  - 기본 순서: `sync 대표 -> sync 확장 -> async 대표 -> async 확장`
+  - Sync 대표 서비스(먼저 구현): `order-service-sync`
+  - Async 대표 서비스(먼저 구현): `order-service-async`
+  - 리뷰 게이트 통과 조건: 대표 서비스 기준 코드/테스트/컨벤션 리뷰 완료
+  - 자동 확장 대상/방식:
+    - Sync: `notification-service-sync`, `shipping-service-sync`를 대표 패턴으로 확장
+    - Async: `notification-service-async`, `shipping-service-async`를 대표 패턴으로 확장
 - 테스트 포인트:
   - `docker compose up` 후 Kafka/서비스 헬스 체크 성공
   - Sync/Async 주문 엔드포인트가 계약대로 응답
