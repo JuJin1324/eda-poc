@@ -5,6 +5,10 @@ description: "Architecture Decision Record(ADR) 생성 스킬. 다음 두 가지
 
 # ADR 생성 스킬
 
+## 적용 원칙
+- Core: `docs/skill-ops/principles.md`의 `Core (공통 강제)` 적용
+- Modules: 없음
+
 ## 참고 문서
 
 - `references/experience.md`

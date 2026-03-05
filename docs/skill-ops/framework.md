@@ -3,6 +3,11 @@
 이 문서는 `sprint-N` 기준 문제 해결 파이프라인의 고수준 운영 계약을 정의한다.
 이 문서는 특정 스킬에 의존하지 않으며, 어떤 실행 주체든 동일하게 적용된다.
 
+## 상위 원칙 문서
+- 프레임워크 공통 실행 원칙은 `docs/skill-ops/principles.md`를 따른다.
+- 본 문서는 단계 게이트/라우팅/산출물 계약을 정의하며, 원칙 문서는 실행 태도/판단 기준을 정의한다.
+- 문서 간 충돌 시 디렉터리/게이트/라우팅 계약은 본 문서를 우선 적용한다.
+
 ## 문제 해결 파이프라인 그래프
 ```mermaid
 flowchart LR
@@ -104,5 +109,6 @@ flowchart LR
 4. `다음 단계` 결정은 `framework-applied-skills.md`의 적용 순서와 충돌하면 안 된다.
 
 ## 변경 이력
+- `v2.2.0` (2026-03-05): 상위 원칙 문서를 `docs/skill-ops/principles.md`로 분리하고 프레임워크에서 참조하도록 정리함.
 - `v2.1.0` (2026-03-05): `Control` 단계를 제거하고 `Delivery`/`Learning` 책임을 분리하는 3단계 운영 기준을 확정함.
 - `v2.0.0` (2026-03-05): 단계 모델을 `Direction/Delivery/Learning` 3단계로 단순화하고, `Bootstrap` 시동 규칙을 추가했으며 단계 산출 경로를 `1-direction/2-delivery/3-learning`으로 재정의함.

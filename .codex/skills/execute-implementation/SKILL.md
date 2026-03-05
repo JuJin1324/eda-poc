@@ -8,6 +8,10 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 ## 목적
 `.agile/sprints/sprint-N/2-delivery/design-implementation.md`를 바탕으로 코드를 구현하고 검증한다.
 
+## 적용 원칙
+- Core: `docs/skill-ops/principles.md`의 `Core (공통 강제)` 적용
+- Modules: `M-PIPELINE-CONTRACT`, `M-WIP-ONE-US`, `M-STEP-REVIEW-GATE`
+
 핵심 원칙:
 - US 단위로 구현을 진행하고, 필요 시 Step 상세를 보강한다.
 - 기본 실행 단위는 US 1개이며, 병렬 구현으로 WIP를 늘리지 않는다.

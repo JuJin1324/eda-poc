@@ -8,6 +8,10 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 ## 목적
 `.agile/sprints/sprint-N/2-delivery/design-test-us-N.M.md`를 기반으로 테스트를 구현/실행하고 결과를 검증한다.
 
+## 적용 원칙
+- Core: `docs/skill-ops/principles.md`의 `Core (공통 강제)` 적용
+- Modules: `M-PIPELINE-CONTRACT`, `M-WIP-ONE-US`
+
 핵심 원칙:
 - P0부터 실행해 리스크를 먼저 낮춘다.
 - 실패는 증거와 함께 기록한다.

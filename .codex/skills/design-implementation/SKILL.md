@@ -8,6 +8,10 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 ## 목적
 `.agile/sprints/sprint-N/1-direction/design-phase.md`에서 정의된 US를 실제 구현 가능한 상세 설계로 변환한다.
 
+## 적용 원칙
+- Core: `docs/skill-ops/principles.md`의 `Core (공통 강제)` 적용
+- Modules: `M-PIPELINE-CONTRACT`, `M-WIP-ONE-US`
+
 핵심 원칙:
 - 바퀴를 새로 만들지 않는다: 기술 스택 결정 전 웹 검색으로 재사용 가능한 라이브러리/서비스를 먼저 검토한다.
 - 구현 전에 설계 증적을 남긴다.

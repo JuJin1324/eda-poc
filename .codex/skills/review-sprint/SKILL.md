@@ -8,6 +8,10 @@ description: "Delivery 단계 산출물을 기반으로 Sprint 회고/학습 문
 ## 목적
 `2-delivery/` 산출물을 기반으로 Learning 단계 회고를 확정한다.
 
+## 적용 원칙
+- Core: `docs/skill-ops/principles.md`의 `Core (공통 강제)` 적용
+- Modules: `M-PIPELINE-CONTRACT`
+
 핵심 원칙:
 - 회고/학습 산출물은 `3-learning/` 디렉터리에만 기록한다.
 - 본 스킬은 회고/학습/다음 스프린트 결정에 집중한다.

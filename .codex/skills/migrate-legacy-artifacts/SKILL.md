@@ -8,6 +8,10 @@ description: "구버전 스킬 산출물(예: 2w-brainstorm.md, case-studies.md,
 ## 목적
 구버전 스킬 산출 문서를 신버전 스킬 입력 경로로 변환해, 기존 프로젝트를 끊김 없이 계속 진행할 수 있게 한다.
 
+## 적용 원칙
+- Core: `docs/skill-ops/principles.md`의 `Core (공통 강제)` 적용
+- Modules: 없음
+
 핵심 원칙:
 - 기본은 `dry-run`으로 실행한다.
 - 원본 레거시 파일은 수정/삭제하지 않는다.
