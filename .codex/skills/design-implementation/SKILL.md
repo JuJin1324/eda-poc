@@ -46,7 +46,7 @@ description: "프로젝트 진행 단계에서 구현 설계를 수행하는 메
 - `.agile/context/tech-stack.md` (없으면 생성)
 
 템플릿:
-- `templates/design-implementation-vN.md`
+- `templates/design-implementation.md`
 - `templates/tech-stack.md`
 
 참고 문서:

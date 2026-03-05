@@ -38,7 +38,7 @@ description: "테스트 설계를 바탕으로 테스트 코드를 구현하고 
 - `.agile/sprints/sprint-N/2-delivery/execute-test-us-N.M.md`
 
 템플릿:
-- `templates/execute-test-us-vN.md`
+- `templates/execute-test-us.md`
 
 참고 문서:
 - `docs/skill-ops/framework.md`

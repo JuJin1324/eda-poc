@@ -1,4 +1,4 @@
-# Legacy Migration Report vN - [프로젝트명]
+# Legacy Migration Report - [프로젝트명]
 
 ## 한눈에 결론
 - 마이그레이션 결과 요약:

@@ -42,7 +42,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M-step-x.x.x-a.md` (마이크로 스텝별 1개)
 
 템플릿:
-- `templates/execute-implementation-vN.md`
+- `templates/execute-implementation.md`
 
 참고 문서:
 - `docs/skill-ops/framework.md`
@@ -86,7 +86,7 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 
 ### 6단계. 실행 결과 문서화
 - 마이크로 스텝 완료마다 `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M-step-x.x.x-a.md` 생성/갱신
-- 간소 템플릿(`templates/execute-implementation-vN.md`)으로 이번 스텝 범위만 기록
+- 간소 템플릿(`templates/execute-implementation.md`)으로 이번 스텝 범위만 기록
 - 코드 변경사항과 US/Step 관계를 최소 매핑으로 기록
 - 검증 명령/결과, 리뷰 요청 상태(Pending/Approved/Needs changes)를 기록
 - 다음 단계 라우팅을 기록:

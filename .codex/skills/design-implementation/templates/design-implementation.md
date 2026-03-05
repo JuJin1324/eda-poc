@@ -1,4 +1,4 @@
-# Design Implementation vN - [문제명]
+# Design Implementation - [문제명]
 
 ## 한눈에 결론
 - 설계 핵심 결론:

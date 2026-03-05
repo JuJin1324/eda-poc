@@ -1,4 +1,4 @@
-# Execute Test US-{N}.{M} vN - [문제명]
+# Execute Test US-{N}.{M} - [문제명]
 
 ## 한눈에 결론
 - 실행 결과 요약:

@@ -44,7 +44,7 @@ description: "구버전 스킬 산출물(예: 2w-brainstorm.md, case-studies.md,
 - `<project-root>/.agile/migration/legacy-migration-report-vN.md`
 
 템플릿:
-- `templates/legacy-migration-report-vN.md`
+- `templates/legacy-migration-report.md`
 
 스크립트:
 - `scripts/migrate_legacy_artifacts.sh`

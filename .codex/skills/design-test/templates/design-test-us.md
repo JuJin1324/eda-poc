@@ -1,4 +1,4 @@
-# Design Test US-{N}.{M} vN - [문제명]
+# Design Test US-{N}.{M} - [문제명]
 
 ## 한눈에 결론
 - 테스트 설계 핵심 결론:
