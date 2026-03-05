@@ -173,14 +173,9 @@ flowchart TD
   10. Step-1.1.4-b: 알림/배송 Kafka consumer(group 분리) 구현
   11. Step-1.1.5-a: `docker compose config` 정합성 검증
   12. Step-1.1.5-b: 최소 테스트(`shared-contract`, `order-service-*`) 실행 및 증적 기록
-- 대표 1개 선행 + 확장 게이트:
-  - 기본 순서: `sync 대표 -> sync 확장 -> async 대표 -> async 확장`
-  - Sync 대표 서비스(먼저 구현): `order-service-sync`
-  - Async 대표 서비스(먼저 구현): `order-service-async`
-  - 리뷰 게이트 통과 조건: 대표 서비스 기준 코드/테스트/컨벤션 리뷰 완료
-  - 자동 확장 대상/방식:
-    - Sync: `notification-service-sync`, `shipping-service-sync`를 대표 패턴으로 확장
-    - Async: `notification-service-async`, `shipping-service-async`를 대표 패턴으로 확장
+- 마이크로 스텝 리뷰 게이트:
+  - 기본 순서: `한 스텝 구현 -> 검증 -> 사용자 리뷰 -> 다음 스텝`
+  - 리뷰 게이트 통과 조건: 해당 스텝 기준 코드/테스트/컨벤션 리뷰 완료
 - 테스트 포인트:
   - `docker compose up` 후 Kafka/서비스 헬스 체크 성공
   - Sync/Async 주문 엔드포인트가 계약대로 응답
