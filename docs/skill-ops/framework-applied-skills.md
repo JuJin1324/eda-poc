@@ -11,3 +11,9 @@
 | `8` | `C2 Delivery` | `monitor-sprint` (상태 갱신/재평가) | `.agile/sprints/sprint-N/2-delivery/` |
 | `9` | `C3 Learning` | `review-sprint` | `.agile/sprints/sprint-N/3-learning/` |
 | `10` | `C1 Direction` | 다음 스프린트 재진입 | `.agile/sprints/sprint-N/1-direction/` |
+
+## C2 반복 실행 규칙
+1. `4~8`번 스킬은 US 단위로 순차 반복한다.
+2. 기본 반복 단위는 US 1개다.
+3. 표준 루프 순서는 `design-implementation -> execute-implementation -> design-test -> execute-test -> monitor-sprint`다.
+4. 현재 US가 완료되기 전에는 다음 US를 착수하지 않는다.

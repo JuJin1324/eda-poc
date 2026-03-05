@@ -6,10 +6,12 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 # Execute Implementation
 
 ## 목적
-`.agile/loops/loop-vN/design-implementation.md`를 바탕으로 코드를 구현하고 검증한다.
+`.agile/sprints/sprint-N/2-delivery/design-implementation.md`를 바탕으로 코드를 구현하고 검증한다.
 
 핵심 원칙:
 - US 단위로 구현을 진행하고, 필요 시 Step 상세를 보강한다.
+- 기본 실행 단위는 US 1개이며, 병렬 구현으로 WIP를 늘리지 않는다.
+- 구현 완료 후 동일 US의 테스트 설계/실행으로 즉시 연결한다.
 - 코드 스타일 컨벤션을 강제 적용한다.
 - 구현 증적(테스트/결과)을 남긴다.
 - 코드와 US/Step의 연결관계를 명시해 인지부하를 줄인다.
@@ -23,12 +25,12 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 구현 결과 기록
 
 ## 입력
-- `.agile/loops/loop-vN/design-implementation.md`
-- `.agile/loops/loop-vN/sprint/sprint-status.md`
+- `.agile/sprints/sprint-N/2-delivery/design-implementation.md`
+- `.agile/sprints/sprint-N/2-delivery/sprint-status.md`
 
 ## 출력물
 - 코드 변경사항
-- `.agile/loops/loop-vN/execute-implementation-us-N.M.md`
+- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md`
 
 템플릿:
 - `templates/execute-implementation-vN.md`
@@ -66,9 +68,12 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 실패 시 원인/수정 기록
 
 ### 6단계. 실행 결과 문서화
-- `.agile/loops/loop-vN/execute-implementation-us-N.M.md`에 결과, 증적, 남은 리스크 기록
+- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md`에 결과, 증적, 남은 리스크 기록
 - 코드 변경사항과 US/Step 관계를 매핑 표로 기록
 - 핵심 구현 의도(왜 이렇게 구현했는지)를 설명
+- 다음 단계 라우팅을 기록:
+  - 기본: 동일 US로 `/design-test` 이동
+  - 예외: 구현 미완료/결함 잔존 시 동일 US 구현을 보강
 
 ## 안티패턴
 - 설계 문서 없이 바로 코드 작성
@@ -80,8 +85,9 @@ description: "구현 설계를 바탕으로 실제 코드를 작성하고 검증
 - 대상 US 구현 완료
 - 테스트/검증 결과 기록 완료
 - 컨벤션 체크리스트 확인 완료
-- `.agile/loops/loop-vN/execute-implementation-us-N.M.md` 작성 완료
+- `.agile/sprints/sprint-N/2-delivery/execute-implementation-us-N.M.md` 작성 완료
 - 코드-요구사항 매핑 및 구현 의도 설명 완료
+- 동일 US 기준 다음 단계(`/design-test`) 착수 정보 기록 완료
 
 ## 다음 단계
 - 다음 적용 스킬은 `docs/skill-ops/framework-applied-skills.md`의 `단계별 적용 순서`를 참조해 결정한다.
