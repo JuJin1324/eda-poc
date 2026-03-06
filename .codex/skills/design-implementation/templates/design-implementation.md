@@ -79,15 +79,22 @@ sequenceDiagram
 ##### A-3. [선택] 추가 비즈니스 흐름 (실패/복구/보상)
 ```mermaid
 sequenceDiagram
-  participant Actor as 액터
-  participant Domain as 도메인 서비스
+    participant User as 사용자
+    participant Domain as 도메인 서비스
+    participant Retry as 재시도 큐
 
-  Actor->>Domain: 비즈니스 요청
-  alt 성공
-    Domain-->>Actor: 완료/상태 업데이트
-  else 실패
-    Domain-->>Actor: 실패 사유 + 보상/재시도 정책
-  end
+    User->>Domain: 비즈니스 요청
+    alt 처리 성공
+        Domain-->>User: 완료/상태 업데이트
+    else 처리 실패
+        Domain->>Retry: 재시도 작업 등록
+        Domain-->>User: 실패 사유와 후속 조치 안내
+    end
+
+    opt 재처리 성공
+        Retry->>Domain: 재처리 트리거
+        Domain-->>User: 복구 완료 알림
+    end
 ```
 
 #### B. 기술 흐름 다이어그램 (선택, 0개 이상)
@@ -141,18 +148,20 @@ flowchart TD
   D --> E
 ```
 
-## 2) 인터페이스와 ADR
-### 2-1. 인터페이스 정의
-- 입력:
-- 출력:
-- 이벤트/메시지:
+## 2) 구현 전달 정보
+### 2-1. US 상세 스텝 설계 (필수)
+| Step ID | 목표 | 선행조건/입력 | 핵심 작업 | 산출물 | 완료 기준(DoD) | 검증 방법 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `1.1.1-a` |  |  |  |  |  |  |
+| `1.1.1-b` |  |  |  |  |  |  |
+| `1.1.1-c` |  |  |  |  |  |  |
 
-### 2-2. ADR 요약
-| ADR | Decision | Why | Trade-off |
-| --- | --- | --- | --- |
-| ADR-001 |  |  |  |
+스텝 작성 규칙:
+- 기본 2~5개 스텝으로 분해한다.
+- 각 스텝은 하나의 변경축만 다루고, 검증 가능해야 한다.
+- Step ID는 설계 문서와 실행 문서(`execute-implementation-us-N.M-step-x.x.x-*.md`)에서 동일하게 사용한다.
 
-## 3) 구현 전달 정보
+### 2-2. 구현 전달 체크리스트
 - 구현 우선순위:
 - 대표 1개 선행 + 확장 게이트:
   - 기본 순서: `sync 대표 -> sync 확장 -> async 대표 -> async 확장`
@@ -164,6 +173,17 @@ flowchart TD
 - 리스크/완화:
 - 선행 의존사항:
 - US 루프 순서: `execute-implementation -> design-test -> execute-test -> monitor-sprint`
+
+## 3) 인터페이스와 ADR
+### 3-1. 인터페이스 정의
+- 입력:
+- 출력:
+- 이벤트/메시지:
+
+### 3-2. ADR 요약
+| ADR | Decision | Why | Trade-off |
+| --- | --- | --- | --- |
+| ADR-001 |  |  |  |
 
 ## 4) 대상 범위와 목표
 - 대상 US (기본 1개):
