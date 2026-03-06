@@ -160,22 +160,42 @@ flowchart TD
 | ADR-003 | 이벤트 스키마 JSON + `orderId` 키 고정 | 초기 구현 속도와 순서 보장 기준을 동시에 만족 | 스키마 진화 관리는 후속 스프린트 과제 |
 
 ## 3) 구현 전달 정보
+### 3-1. US 상세 스텝 설계 (필수)
+| Step ID | 목표 | 선행조건/입력 | 핵심 작업 | 산출물 | 완료 기준(DoD) | 검증 방법 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Step-1.1.1-a` | 루트 빌드 기준점 확정 | `design-phase`, `tech-stack` 합의 | 루트 Gradle 파일(`settings`, `build`, `properties`) 생성 | `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties` | 루트 빌드 파일 3종이 생성되고 핵심 설정값이 반영됨 | 파일 존재/비어있지 않음 확인, 핵심 설정값 검색 |
+| `Step-1.1.1-b` | 공통 계약 모델 확정 | `Step-1.1.1-a` 완료 | `shared-contract` DTO/이벤트 스키마 작성 | API DTO, 이벤트 모델, JSON Schema | 공통 계약 타입과 스키마가 코드/리소스로 정의됨 | `./gradlew compileJava --no-daemon`, 계약 타입/스키마 필드 검색 |
+| `Step-1.1.1-c` | 서비스 모듈 골격 생성 | `Step-1.1.1-b` 완료 | 6개 서비스 모듈 기본 부트 앱/리소스 골격 생성 | 서비스별 기본 소스/리소스 구조 | sync/async 6개 서비스 모듈이 공통 규칙으로 생성됨 | 모듈 디렉터리/엔트리 클래스/기본 리소스 확인 |
+| `Step-1.1.2-a` | 인프라 코어 구성 | `Step-1.1.1-c` 완료 | Compose에 Kafka(KRaft)+AKHQ 우선 구성 | `docker-compose` 인프라 정의 | Kafka/AKHQ 서비스가 Compose에서 해석 가능함 | `docker compose config` |
+| `Step-1.1.2-b` | 동기 서비스 연결 | `Step-1.1.2-a` 완료 | Sync 3개 서비스 Compose 연결 및 포트 확정 | Sync 서비스 Compose 항목 | Sync 서비스 의존관계/포트가 충돌 없이 정의됨 | `docker compose config`, 포트 매핑 확인 |
+| `Step-1.1.2-c` | 비동기 서비스 연결 | `Step-1.1.2-b` 완료 | Async 3개 서비스 Compose 연결 + Kafka 의존관계 설정 | Async 서비스 Compose 항목 | Async 서비스가 Kafka 의존관계와 함께 정의됨 | `docker compose config`, 의존관계 확인 |
+| `Step-1.1.3-a` | 동기 주문 API 계약 구현 | `Step-1.1.2-c` 완료 | `POST /api/sync/orders` 계약 구현(201) | Sync 주문 API 코드 | Sync 주문 API가 계약 응답(201)을 반환함 | API 호출 검증(상태코드/응답 바디) |
+| `Step-1.1.3-b` | 비동기 주문 API 계약 구현 | `Step-1.1.3-a` 완료 | `POST /api/async/orders` 계약 구현(202) | Async 주문 API 코드 | Async 주문 API가 계약 응답(202)을 반환함 | API 호출 검증(상태코드/응답 바디) |
+| `Step-1.1.4-a` | 이벤트 발행 구현 | `Step-1.1.3-b` 완료 | `order-service-async` 이벤트 발행 구현 | Kafka producer 코드 | 주문 처리 후 `order.completed.v1` 발행됨 | 토픽 적재 확인(로그/UI) |
+| `Step-1.1.4-b` | Fan-out 소비 구현 | `Step-1.1.4-a` 완료 | 알림/배송 Kafka consumer(group 분리) 구현 | Notification/Shipping consumer 코드 | 알림/배송이 분리된 컨슈머 그룹으로 소비됨 | 컨슈머 처리 로그/그룹 확인 |
+| `Step-1.1.5-a` | Compose 정합성 확정 | `Step-1.1.4-b` 완료 | `docker compose config` 정합성 검증 | Compose 검증 로그 | Compose 파일 문법/의존성 정합성 통과 | `docker compose config` 결과 |
+| `Step-1.1.5-b` | 최소 테스트/증적 확정 | `Step-1.1.5-a` 완료 | 최소 테스트(`shared-contract`, `order-service-*`) 실행 및 증적 기록 | 테스트 실행 로그/증적 문서 | US-1.1 완료 판단용 최소 검증 증적 확보 | 모듈 테스트 실행 결과 기록 |
+
+### 3-2. 구현 전달 체크리스트
 - 구현 우선순위:
-  1. Step-1.1.1-a: 루트 Gradle 파일(`settings`, `build`, `properties`) 생성
-  2. Step-1.1.1-b: `shared-contract` DTO/이벤트 스키마 작성
-  3. Step-1.1.1-c: 6개 서비스 모듈 기본 부트 앱/리소스 골격 생성
-  4. Step-1.1.2-a: Compose에 Kafka(KRaft)+AKHQ만 먼저 구성
-  5. Step-1.1.2-b: Sync 3개 서비스 Compose 연결 + 포트 확인
-  6. Step-1.1.2-c: Async 3개 서비스 Compose 연결 + Kafka 의존관계 확인
-  7. Step-1.1.3-a: `POST /api/sync/orders` 계약 구현(201)
-  8. Step-1.1.3-b: `POST /api/async/orders` 계약 구현(202)
-  9. Step-1.1.4-a: `order-service-async` 이벤트 발행 구현
-  10. Step-1.1.4-b: 알림/배송 Kafka consumer(group 분리) 구현
-  11. Step-1.1.5-a: `docker compose config` 정합성 검증
-  12. Step-1.1.5-b: 최소 테스트(`shared-contract`, `order-service-*`) 실행 및 증적 기록
-- 마이크로 스텝 리뷰 게이트:
-  - 기본 순서: `한 스텝 구현 -> 검증 -> 사용자 리뷰 -> 다음 스텝`
-  - 리뷰 게이트 통과 조건: 해당 스텝 기준 코드/테스트/컨벤션 리뷰 완료
+  1. `Step-1.1.1-a`: 루트 Gradle 파일 생성
+  2. `Step-1.1.1-b`: `shared-contract` DTO/이벤트 스키마 작성
+  3. `Step-1.1.1-c`: 6개 서비스 모듈 골격 생성
+  4. `Step-1.1.2-a`: Kafka(KRaft)+AKHQ Compose 구성
+  5. `Step-1.1.2-b`: Sync 3개 서비스 Compose 연결
+  6. `Step-1.1.2-c`: Async 3개 서비스 Compose 연결
+  7. `Step-1.1.3-a`: `POST /api/sync/orders` 구현
+  8. `Step-1.1.3-b`: `POST /api/async/orders` 구현
+  9. `Step-1.1.4-a`: Async 이벤트 발행 구현
+  10. `Step-1.1.4-b`: 알림/배송 consumer 구현
+  11. `Step-1.1.5-a`: Compose 정합성 검증
+  12. `Step-1.1.5-b`: 최소 테스트 실행/증적 기록
+- 대표 1개 선행 + 확장 게이트:
+  - 기본 순서: `sync 대표 -> sync 확장 -> async 대표 -> async 확장`
+  - Sync 대표 서비스(먼저 구현): `order-service-sync`
+  - Async 대표 서비스(먼저 구현): `order-service-async`
+  - 리뷰 게이트 통과 조건: 대표 서비스 기준 API 계약 응답/기본 테스트/컨벤션 점검 통과 후 확장
+  - 자동 확장 대상/방식: 대표 구현 패턴을 `notification/shipping` 서비스에 동일 구조로 확장
 - 테스트 포인트:
   - `docker compose up` 후 Kafka/서비스 헬스 체크 성공
   - Sync/Async 주문 엔드포인트가 계약대로 응답
@@ -183,9 +203,11 @@ flowchart TD
 - 리스크/완화:
   - 리스크: 포트 충돌 -> 완화: 포트 매핑 테이블 고정(8080~8085, 9092, 18080)
   - 리스크: 서비스 조기기동 실패 -> 완화: Compose healthcheck + 재시도
+  - 리스크: Java toolchain 불일치 -> 완화: Java 21 고정 및 `compileJava` 선검증
 - 선행 의존사항:
   - Docker/Java 21/Gradle 실행 환경
   - `.agile/context/tech-stack.md`
+  - 로컬 Docker 데몬 기동
 - US 루프 순서: `execute-implementation -> design-test -> execute-test -> monitor-sprint`
 
 ## 4) 대상 범위와 목표
